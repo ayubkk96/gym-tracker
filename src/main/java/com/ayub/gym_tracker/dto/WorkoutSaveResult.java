@@ -1,8 +1,8 @@
 package com.ayub.gym_tracker.dto;
 
 public record WorkoutSaveResult(
+        long id,
         int exercisesSaved,
-        String updatedRange,
         boolean created
 ) {
 }

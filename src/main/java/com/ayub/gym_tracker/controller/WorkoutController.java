@@ -32,10 +32,10 @@ public class WorkoutController {
         Map<String, Object> response = Map.of(
                 "saved", true,
                 "action", result.created() ? "created" : "updated",
+                "id", result.id(),
                 "date", request.date(),
                 "workout", request.workout(),
-                "exercisesSaved", result.exercisesSaved(),
-                "updatedRange", result.updatedRange()
+                "exercisesSaved", result.exercisesSaved()
         );
 
         HttpStatus status = result.created()

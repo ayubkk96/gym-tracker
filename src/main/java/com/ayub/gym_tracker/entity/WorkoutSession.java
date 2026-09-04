@@ -72,6 +72,10 @@ public class WorkoutSession {
         this.notes = notes;
     }
 
+    public void updateDayNumber(Integer dayNumber) {
+        this.dayNumber = dayNumber;
+    }
+
     public void addExercise(ExerciseLog exercise) {
         exercise.attachTo(this);
         exercises.add(exercise);

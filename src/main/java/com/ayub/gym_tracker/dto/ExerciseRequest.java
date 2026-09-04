@@ -8,12 +8,15 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record ExerciseRequest(
-        @NotBlank @Size(max = 100) String name,
+        @NotBlank
+        @Size(max = 100)
+        String name,
 
         @NotNull
-        @Size(min = 1, max = 6)
+        @Size(min = 1, max = 20)
         List<@Valid WorkoutSetRequest> sets,
 
-        @Size(max = 250) String notes
+        @Size(max = 500)
+        String notes
 ) {
 }
