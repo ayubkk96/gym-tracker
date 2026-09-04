@@ -14,4 +14,7 @@ public interface DailyTargetRepository
             Long userId,
             LocalDate date
     );
+
+    Optional<DailyTarget>
+    findFirstByUserIdOrderByEffectiveFromAsc(Long userId);
 }

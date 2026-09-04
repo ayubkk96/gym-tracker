@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -25,14 +24,14 @@ public class NutritionController {
     @PostMapping("/api/nutrition")
     public ResponseEntity<Map<String, Object>> saveNutrition(
             @Valid @RequestBody NutritionRequest request
-    ) throws IOException {
+    ) {
         NutritionSaveResult result =
                 nutritionService.saveNutrition(request);
 
         Map<String, Object> response = Map.of(
                 "saved", true,
                 "date", request.date(),
-                "row", result.row(),
+                "id", result.id(),
                 "action", result.created() ? "created" : "updated"
         );
 

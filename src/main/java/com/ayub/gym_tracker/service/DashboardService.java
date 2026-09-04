@@ -28,7 +28,7 @@ public class DashboardService {
             LocalDate date
     ) throws IOException {
         DailyTargetsResponse targets =
-                nutritionService.getDailyTargets();
+                nutritionService.getDailyTargets(date);
 
         NutritionResponse nutrition =
                 nutritionService.getNutritionByDate(date);
