@@ -6,7 +6,6 @@ import com.ayub.gym_tracker.dto.NutritionResponse;
 import com.ayub.gym_tracker.dto.WorkoutResponse;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class DashboardService {
 
     public DashboardResponse getDashboard(
             LocalDate date
-    ) throws IOException {
+    ) {
         DailyTargetsResponse targets =
                 nutritionService.getDailyTargets(date);
 

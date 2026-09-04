@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -25,7 +24,7 @@ public class WorkoutController {
     @PostMapping("/api/workouts")
     public ResponseEntity<Map<String, Object>> saveWorkout(
             @Valid @RequestBody WorkoutRequest request
-    ) throws IOException {
+    ) {
         WorkoutSaveResult result =
                 workoutService.saveWorkout(request);
 
