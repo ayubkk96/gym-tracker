@@ -31,7 +31,7 @@ public class NutritionLog {
     @Column(name = "log_date", nullable = false)
     private LocalDate logDate;
 
-    @Column(name = "day_number", nullable = false)
+    @Column(name = "day_number")
     private Integer dayNumber;
 
     @Column(nullable = false)

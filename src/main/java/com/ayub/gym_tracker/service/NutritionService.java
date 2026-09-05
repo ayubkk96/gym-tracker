@@ -77,13 +77,7 @@ public class NutritionService {
                 request.date()
         );
 
-        if (difference < 0) {
-            throw new IllegalArgumentException(
-                    "Date cannot be before " + startDate
-            );
-        }
-
-        int dayNumber = Math.toIntExact(difference) + 1;
+        Integer dayNumber = difference < 0 ? null : Math.toIntExact(difference) + 1;
 
         NutritionLog nutritionLog = new NutritionLog(
                 user,
@@ -116,6 +110,7 @@ public class NutritionService {
                         user.getId(),
                         date
                 )
+                .or(() -> dailyTargetRepository.findFirstByUserIdOrderByEffectiveFromAsc(user.getId()))
                 .orElseThrow(() -> new IllegalStateException(
                         "No targets found for date: " + date
                 ));

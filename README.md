@@ -81,6 +81,18 @@ backups. Operators must configure backup/log retention and avoid restoring delet
 accounts when recovering backups. Hashed abuse-prevention counters expire normally.
 No live account is deleted by deploying this feature.
 
+## Logging earlier dates
+
+The tracking start date does not restrict viewing, adding or editing past logs.
+For dates before the first targets' effective date, the dashboard uses the account's
+earliest targets as defaults. On later dates, the targets effective on that date
+continue to apply. The start date and existing entries are not rewritten.
+
+Flyway V5 makes legacy `day_number` fields nullable. Logs before the tracking start
+date return `day: null`; entries on/after it keep their existing day-number behavior.
+The interface continues to use calendar dates. Restart the application after pulling
+the change so Flyway applies the migration.
+
 ## Requirements
 
 - Java 21

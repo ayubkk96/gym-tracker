@@ -34,7 +34,7 @@ public class WorkoutSession {
     @Column(name = "workout_date", nullable = false)
     private LocalDate workoutDate;
 
-    @Column(name = "day_number", nullable = false)
+    @Column(name = "day_number")
     private Integer dayNumber;
 
     @Column(nullable = false, length = 100)
