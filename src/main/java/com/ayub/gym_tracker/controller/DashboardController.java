@@ -1,6 +1,6 @@
 package com.ayub.gym_tracker.controller;
 
-import com.ayub.gym_tracker.dto.DashboardResponse;
+import com.ayub.gym_tracker.dto.response.DashboardResponse;
 import com.ayub.gym_tracker.service.DashboardService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;

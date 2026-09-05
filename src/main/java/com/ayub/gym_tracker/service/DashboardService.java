@@ -1,9 +1,9 @@
 package com.ayub.gym_tracker.service;
 
-import com.ayub.gym_tracker.dto.DailyTargetsResponse;
-import com.ayub.gym_tracker.dto.DashboardResponse;
-import com.ayub.gym_tracker.dto.NutritionResponse;
-import com.ayub.gym_tracker.dto.WorkoutResponse;
+import com.ayub.gym_tracker.dto.response.DailyTargetsResponse;
+import com.ayub.gym_tracker.dto.response.DashboardResponse;
+import com.ayub.gym_tracker.dto.response.NutritionResponse;
+import com.ayub.gym_tracker.dto.response.WorkoutResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

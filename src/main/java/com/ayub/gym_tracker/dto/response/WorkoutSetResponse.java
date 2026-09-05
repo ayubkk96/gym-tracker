@@ -1,5 +1,5 @@
 // WorkoutSetResponse.java
-package com.ayub.gym_tracker.dto;
+package com.ayub.gym_tracker.dto.response;
 
 import java.math.BigDecimal;
 

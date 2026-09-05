@@ -1,9 +1,9 @@
 package com.ayub.gym_tracker.service;
 
-import com.ayub.gym_tracker.dto.DailyTargetsResponse;
-import com.ayub.gym_tracker.dto.NutritionRequest;
-import com.ayub.gym_tracker.dto.NutritionResponse;
-import com.ayub.gym_tracker.dto.NutritionSaveResult;
+import com.ayub.gym_tracker.dto.response.DailyTargetsResponse;
+import com.ayub.gym_tracker.dto.request.NutritionRequest;
+import com.ayub.gym_tracker.dto.response.NutritionResponse;
+import com.ayub.gym_tracker.dto.result.NutritionSaveResult;
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.entity.DailyTarget;
 import com.ayub.gym_tracker.entity.NutritionLog;

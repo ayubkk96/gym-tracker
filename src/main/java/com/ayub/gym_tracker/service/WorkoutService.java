@@ -1,12 +1,12 @@
 package com.ayub.gym_tracker.service;
 
-import com.ayub.gym_tracker.dto.ExerciseRequest;
-import com.ayub.gym_tracker.dto.ExerciseResponse;
-import com.ayub.gym_tracker.dto.WorkoutRequest;
-import com.ayub.gym_tracker.dto.WorkoutResponse;
-import com.ayub.gym_tracker.dto.WorkoutSaveResult;
-import com.ayub.gym_tracker.dto.WorkoutSetRequest;
-import com.ayub.gym_tracker.dto.WorkoutSetResponse;
+import com.ayub.gym_tracker.dto.request.ExerciseRequest;
+import com.ayub.gym_tracker.dto.response.ExerciseResponse;
+import com.ayub.gym_tracker.dto.request.WorkoutRequest;
+import com.ayub.gym_tracker.dto.response.WorkoutResponse;
+import com.ayub.gym_tracker.dto.result.WorkoutSaveResult;
+import com.ayub.gym_tracker.dto.request.WorkoutSetRequest;
+import com.ayub.gym_tracker.dto.response.WorkoutSetResponse;
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.entity.DailyTarget;
 import com.ayub.gym_tracker.entity.ExerciseLog;

@@ -1,4 +1,4 @@
-package com.ayub.gym_tracker.dto;
+package com.ayub.gym_tracker.dto.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

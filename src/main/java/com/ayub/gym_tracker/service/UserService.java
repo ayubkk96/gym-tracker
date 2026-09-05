@@ -1,8 +1,8 @@
 package com.ayub.gym_tracker.service;
 
-import com.ayub.gym_tracker.dto.DailyTargetRequest;
-import com.ayub.gym_tracker.dto.UserRegistrationRequest;
-import com.ayub.gym_tracker.dto.UserRegistrationResponse;
+import com.ayub.gym_tracker.dto.request.DailyTargetRequest;
+import com.ayub.gym_tracker.dto.request.UserRegistrationRequest;
+import com.ayub.gym_tracker.dto.response.UserRegistrationResponse;
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.entity.DailyTarget;
 import com.ayub.gym_tracker.exception.EmailAlreadyExistsException;

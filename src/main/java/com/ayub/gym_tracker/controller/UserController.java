@@ -1,7 +1,7 @@
 package com.ayub.gym_tracker.controller;
 
-import com.ayub.gym_tracker.dto.UserRegistrationRequest;
-import com.ayub.gym_tracker.dto.UserRegistrationResponse;
+import com.ayub.gym_tracker.dto.request.UserRegistrationRequest;
+import com.ayub.gym_tracker.dto.response.UserRegistrationResponse;
 import com.ayub.gym_tracker.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

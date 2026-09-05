@@ -1,4 +1,4 @@
-package com.ayub.gym_tracker.dto;
+package com.ayub.gym_tracker.dto.response;
 
 import java.time.LocalDate;
 
