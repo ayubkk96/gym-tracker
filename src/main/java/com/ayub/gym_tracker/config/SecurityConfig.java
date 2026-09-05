@@ -5,6 +5,7 @@ import com.ayub.gym_tracker.repository.AppUserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 public class SecurityConfig {
@@ -44,24 +45,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(
             HttpSecurity http
     ) throws Exception {
         http
+                .securityMatcher("/api/**")
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/login.html",
-                                "/auth.js",
-                                "/styles.css",
-                                "/favicon.ico",
-                                "/error",
                                 "/api/health",
                                 "/api/auth/session",
                                 "/api/users"
                         )
                         .permitAll()
-                        .requestMatchers("/api/**")
-                        .authenticated()
                         .anyRequest()
                         .authenticated()
                 )
@@ -97,17 +93,54 @@ public class SecurityConfig {
                         )
                 )
                 .exceptionHandling(exceptions -> exceptions
-                        .defaultAuthenticationEntryPointFor(
+                        .authenticationEntryPoint(
                                 (request, response, exception) ->
                                         writeJson(
                                                 response,
                                                 HttpServletResponse.SC_UNAUTHORIZED,
                                                 "{\"message\":"
                                                         + "\"Authentication required.\"}"
-                                        ),
-                                PathPatternRequestMatcher
-                                        .withDefaults()
-                                        .matcher("/api/**")
+                                        )
+                        )
+                )
+                .headers(headers -> headers
+                        .contentSecurityPolicy(policy -> policy
+                                .policyDirectives(
+                                        "default-src 'self'; "
+                                                + "base-uri 'self'; "
+                                                + "form-action 'self'; "
+                                                + "frame-ancestors 'none'; "
+                                                + "object-src 'none'"
+                                )
+                        )
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain pageSecurityFilterChain(
+            HttpSecurity http
+    ) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/login.html",
+                                "/auth.js",
+                                "/styles.css",
+                                "/favicon.ico",
+                                "/error"
+                        )
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(
+                                new LoginUrlAuthenticationEntryPoint(
+                                        "/login.html"
+                                )
                         )
                 )
                 .headers(headers -> headers
