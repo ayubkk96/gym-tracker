@@ -94,6 +94,29 @@ public class WorkoutService {
         );
     }
 
+    @Transactional
+    public WorkoutSaveResult replaceWorkout(String originalName, LocalDate originalDate, WorkoutRequest request) {
+        AppUser user = currentUserService.getCurrentUser();
+        WorkoutSession original = workoutSessionRepository
+                .findByUserIdAndWorkoutDateAndNameIgnoreCase(user.getId(), originalDate, originalName.trim())
+                .orElseThrow(() -> new IllegalArgumentException("Original workout no longer exists. Reload the dashboard."));
+        String name = request.workout().trim();
+        if (name.equalsIgnoreCase("Rest") && !request.exercises().isEmpty())
+            throw new IllegalArgumentException("A rest entry cannot contain exercises.");
+        WorkoutSession target = workoutSessionRepository
+                .findByUserIdAndWorkoutDateAndNameIgnoreCase(user.getId(), request.date(), name).orElse(null);
+        if (target != null && !target.getId().equals(original.getId())) {
+            // Collapse an existing empty Rest marker, including duplicates created by the old editor.
+            if (!name.equalsIgnoreCase("Rest") || !target.getExercises().isEmpty())
+                throw new IllegalArgumentException("A workout with that name already exists on this date.");
+            workoutSessionRepository.delete(target);
+            workoutSessionRepository.flush();
+        }
+        original.renameAndMove(name, request.date());
+        workoutSessionRepository.flush();
+        return saveWorkout(request);
+    }
+
     public List<WorkoutResponse> getWorkoutsByDate(
             LocalDate date
     ) {

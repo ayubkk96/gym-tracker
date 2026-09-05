@@ -742,6 +742,7 @@ workoutForm.addEventListener(
     saveWorkout
 );
 
+let editingWorkoutDate = null;
 function openWorkoutForm(workout = null) {
     resetWorkoutTools(Boolean(workout));
     workoutForm.reset();
@@ -749,6 +750,7 @@ function openWorkoutForm(workout = null) {
     clearWorkoutFormStatus();
 
     editingWorkoutName = workout?.name ?? null;
+    editingWorkoutDate = workout ? dateInput.value : null;
 
     document.querySelector("#workout-form-title").textContent =
         workout ? "Edit Workout" : "Log Workout";
@@ -885,12 +887,11 @@ function updateRestWorkoutState() {
         workoutName.value = "Rest";
         workoutName.readOnly = true;
     } else {
-        if (!editingWorkoutName
-                && workoutName.value === "Rest") {
-            workoutName.value = "";
+        if (workoutName.value === "Rest") {
+            workoutName.value = editingWorkoutName && editingWorkoutName !== "Rest" ? editingWorkoutName : "";
         }
 
-        workoutName.readOnly = editingWorkoutName != null;
+        workoutName.readOnly = editingWorkoutName != null && editingWorkoutName !== "Rest";
     }
     updateTemplateControls();
     schedulePreviousWorkout();
@@ -909,6 +910,9 @@ async function saveWorkout(event) {
         ? []
         : [...exerciseEditors.children]
             .map(createExercisePayload);
+
+    if (resting && editingWorkoutName && editingWorkoutName.toLowerCase() !== "rest"
+            && !window.confirm("Replace this workout with Rest? Its exercises and sets will be removed when you save.")) return;
 
     if (!resting && exercises.length === 0) {
         showWorkoutFormError(
@@ -931,8 +935,9 @@ async function saveWorkout(event) {
     setWorkoutSaving(true);
 
     try {
-        const response = await fetch("/api/workouts", {
-            method: "POST",
+        const editQuery = editingWorkoutName == null ? "" : "?" + new URLSearchParams({originalName: editingWorkoutName, originalDate: editingWorkoutDate});
+        const response = await fetch("/api/workouts" + editQuery, {
+            method: editingWorkoutName == null ? "POST" : "PUT",
             headers: mutationHeaders(),
             body: JSON.stringify(payload)
         });

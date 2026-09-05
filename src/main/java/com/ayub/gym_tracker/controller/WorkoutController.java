@@ -43,4 +43,14 @@ public class WorkoutController {
 
         return ResponseEntity.status(status).body(response);
     }
+
+    @org.springframework.web.bind.annotation.PutMapping("/api/workouts")
+    public ResponseEntity<Map<String, Object>> replaceWorkout(
+            @org.springframework.web.bind.annotation.RequestParam String originalName,
+            @org.springframework.web.bind.annotation.RequestParam java.time.LocalDate originalDate,
+            @Valid @RequestBody WorkoutRequest request) {
+        WorkoutSaveResult result = workoutService.replaceWorkout(originalName, originalDate, request);
+        return ResponseEntity.ok(Map.of("saved", true, "action", "updated", "id", result.id(),
+                "date", request.date(), "workout", request.workout(), "exercisesSaved", result.exercisesSaved()));
+    }
 }
