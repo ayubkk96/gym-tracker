@@ -93,6 +93,18 @@ docker build -t gym-tracker .
 
 ## Production checklist
 
+### Deploy on Render
+
+Follow [the Render deployment guide](docs/render-deployment.md). The included
+`render.yaml` connects the Docker app to a private PostgreSQL 17 database and
+enables HTTPS-only session cookies using the `render` Spring profile.
+
+**Applying the Blueprint creates paid resources.** Review Render's price
+estimate before confirming. Merging the file does not deploy or transfer your
+local data; the guide includes backup and migration precautions.
+
+### Before inviting users
+
 - Deploy behind HTTPS and set `SESSION_COOKIE_SECURE=true`.
 - Use a managed PostgreSQL database with backups.
 - Store database credentials in the hosting provider's secret manager.

@@ -50,3 +50,15 @@ jobs:
 
       - name: Build deployment image
         run: docker build --tag gym-tracker:ci .
+
+      - name: Smoke test Render deployment profile
+        run: |
+          trap 'docker logs gym-tracker-render-smoke; docker rm -f gym-tracker-render-smoke' EXIT
+          docker run --detach --name gym-tracker-render-smoke --network host \
+            -e SPRING_PROFILES_ACTIVE=render -e PORT=18080 \
+            -e DB_HOST=127.0.0.1 -e DB_PORT=5432 -e DB_NAME=gym_tracker \
+            -e DB_USERNAME=gym_user -e DB_PASSWORD=gym_password \
+            gym-tracker:ci
+          curl --fail --silent --show-error --retry 30 --retry-connrefused \
+            --retry-delay 2 --retry-max-time 90 --max-time 5 \
+            http://127.0.0.1:18080/api/health
