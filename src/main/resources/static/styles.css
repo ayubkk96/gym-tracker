@@ -233,8 +233,10 @@ dialog .status { margin-top: 16px; }
 .progress-controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; margin-bottom: 16px; }
 .progress-controls .field { flex: 1 1 180px; min-width: 0; }
 .progress-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin: 20px 0; }
-.progress-card { border: 1px solid #dce4e1; border-radius: 18px; padding: 20px; min-width: 0; background: #fff; }
-.record-value { font-size: 1.8rem; font-weight: 700; color: #176b56; margin: 12px 0; }
+.progress-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; min-width: 0; background: var(--surface); color: var(--text); }
+.progress-card > h3 { color: var(--text); }
+.progress-card > p:last-child { color: var(--muted); margin-bottom: 0; }
+.record-value { font-size: 1.8rem; font-weight: 700; color: var(--accent); margin: 12px 0; }
 #account-dialog { max-width: 560px; }
 #delete-account-form { display: grid; gap: 14px; margin: 24px 0; padding-top: 20px; border-top: 1px solid #dce4e1; }
 #delete-account-button { color: #9b2525; border-color: #9b2525; }
