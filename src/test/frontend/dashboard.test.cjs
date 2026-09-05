@@ -41,7 +41,7 @@ function harness(script = 'app.js') {
 }
 
 test('both pages have unique IDs and every literal JS ID selector exists', () => {
-    for (const [page, script] of [['index.html', 'app.js'], ['login.html', 'auth.js'], ['reset-password.html', 'reset-password.js']]) {
+    for (const [page, script] of [['index.html', 'app.js'], ['index.html', 'workout-tools.js'], ['login.html', 'auth.js'], ['reset-password.html', 'reset-password.js']]) {
         const html = fs.readFileSync(path.join(root, page), 'utf8');
         const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
         assert.equal(ids.length, new Set(ids).size, `${page} duplicate ID`);
@@ -53,6 +53,45 @@ test('both pages have unique IDs and every literal JS ID selector exists', () =>
             assert.ok(ids.includes(match[1]), `${page}: broken reference ${match[1]}`);
         }
     }
+});
+
+function workoutToolsHarness() {
+    const h = harness();
+    h.get('#workout-form').elements.workout = element();
+    h.get('#workout-form').elements.date = element();
+    h.context.URLSearchParams = URLSearchParams;
+    h.context.clearTimeout = () => {};
+    h.run(fs.readFileSync(path.join(root, 'workout-tools.js'), 'utf8'));
+    return h;
+}
+
+test('templates fill set counts without copying weights or reps', () => {
+    const h = workoutToolsHarness();
+    const draft = h.run('templateDraft({exercises:[{name:"Bench",setCount:6,notes:"Pause"}]})');
+    assert.equal(draft[0].sets.length, 6);
+    assert.equal(draft[0].name, 'Bench');
+    assert.ok(draft[0].sets.every(set => set.weightKg === null && set.reps === null));
+});
+
+test('rep comparisons require equal weight and distinguish bodyweight from zero', () => {
+    const h = workoutToolsHarness();
+    assert.match(h.run('previousSetText({weightKg:90,reps:8},"90","10")'), /\+2 reps/);
+    assert.doesNotMatch(h.run('previousSetText({weightKg:90,reps:8},"80","10")'), /\+2/);
+    assert.match(h.run('previousSetText({weightKg:null,reps:8},"","7")'), /-1 reps/);
+    assert.doesNotMatch(h.run('previousSetText({weightKg:null,reps:8},"0","10")'), /\+2/);
+    assert.equal(h.run('previousSetText({weightKg:90,reps:8},"90","")'), 'Last: 90kg × 8');
+});
+
+test('an old previous-session response cannot replace a newer lookup', async () => {
+    const h = workoutToolsHarness();
+    h.get('#workout-dialog').open = true;
+    let resolve;
+    h.context.fetch = () => new Promise(done => { resolve = done; });
+    const pending = h.run('loadPreviousWorkout("Chest","2026-09-05",0)');
+    h.run('previousLookupId++');
+    resolve({ok:true,status:200,json:async () => ({date:'2026-09-01',name:'Chest',exercises:[]})});
+    await pending;
+    assert.equal(h.run('previousWorkout'), null);
 });
 
 test('missing nutrition differs from an actual zero, including progress label', () => {

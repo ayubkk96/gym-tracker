@@ -45,6 +45,7 @@ jobs:
       - name: Verify frontend
         run: |
           node --check src/main/resources/static/app.js
+          node --check src/main/resources/static/workout-tools.js
           node --check src/main/resources/static/auth.js
           node --check src/main/resources/static/reset-password.js
           node --test src/test/frontend/*.test.cjs
