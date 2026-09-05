@@ -49,6 +49,31 @@ class WorkoutToolsTests {
                 .andExpect(status().isOk()).andReturn().getRequest().getSession(false);
     }
 
+    @Test void editingWorkoutToRestReplacesOriginalAndCollapsesExistingRest() throws Exception {
+        var alice=account();
+        var bob=account();
+        workout(alice,"2026-09-01",8);
+        workout(bob,"2026-09-01",99);
+        String rest="{\"date\":\"2026-09-01\",\"workout\":\"Rest\",\"exercises\":[]}";
+        mvc.perform(post("/api/workouts").session(alice).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(rest)).andExpect(status().is2xxSuccessful());
+        mvc.perform(put("/api/workouts").session(alice).with(csrf()).param("originalName","Back").param("originalDate","2026-09-01")
+                .contentType(MediaType.APPLICATION_JSON).content(rest)).andExpect(status().isOk()).andExpect(jsonPath("$.action").value("updated"));
+        entityManager.flush(); entityManager.clear();
+        mvc.perform(get("/api/dashboard").session(alice).param("date","2026-09-01"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.workouts.length()").value(1))
+                .andExpect(jsonPath("$.workouts[0].name").value("Rest")).andExpect(jsonPath("$.workouts[0].exercises").isEmpty());
+        mvc.perform(get("/api/account/export").session(alice)).andExpect(jsonPath("$.sets").isEmpty());
+        mvc.perform(get("/api/dashboard").session(bob).param("date","2026-09-01"))
+                .andExpect(jsonPath("$.workouts[0].exercises[0].sets[0].reps").value(99));
+        String back="{\"date\":\"2026-09-01\",\"workout\":\"Back\",\"exercises\":[{\"name\":\"Pull-ups\",\"sets\":[{\"weightKg\":null,\"reps\":10}]}]}";
+        mvc.perform(put("/api/workouts").session(alice).with(csrf()).param("originalName","Rest").param("originalDate","2026-09-01")
+                .contentType(MediaType.APPLICATION_JSON).content(back)).andExpect(status().isOk());
+        mvc.perform(get("/api/dashboard").session(alice).param("date","2026-09-01"))
+                .andExpect(jsonPath("$.workouts.length()").value(1)).andExpect(jsonPath("$.workouts[0].name").value("Back"));
+        mvc.perform(put("/api/workouts").session(alice).param("originalName","Back").param("originalDate","2026-09-01")
+                .contentType(MediaType.APPLICATION_JSON).content(rest)).andExpect(status().isForbidden());
+    }
+
     @Test void earlierDatesCanBeViewedCreatedAndEditedWithoutRenumbering() throws Exception {
         var session = account(); // Tracking starts 2026-01-01.
         long userId = jdbc.queryForObject("SELECT max(id) FROM app_users", Long.class);

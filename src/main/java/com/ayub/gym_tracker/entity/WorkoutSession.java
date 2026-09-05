@@ -76,6 +76,11 @@ public class WorkoutSession {
         this.dayNumber = dayNumber;
     }
 
+    public void renameAndMove(String name, LocalDate date) {
+        this.name = name;
+        this.workoutDate = date;
+    }
+
     public void addExercise(ExerciseLog exercise) {
         exercise.attachTo(this);
         exercises.add(exercise);
