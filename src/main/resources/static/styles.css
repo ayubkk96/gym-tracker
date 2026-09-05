@@ -229,3 +229,14 @@ dialog .status { margin-top: 16px; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }
+/* Progress panels share the dashboard's spacing and remain readable on phones. */
+.progress-controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; margin-bottom: 16px; }
+.progress-controls .field { flex: 1 1 180px; min-width: 0; }
+.progress-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; margin: 20px 0; }
+.progress-card { border: 1px solid #dce4e1; border-radius: 18px; padding: 20px; min-width: 0; background: #fff; }
+.progress-card svg { width: 100%; height: auto; color: #176b56; }
+.progress-card svg text { font-size: 11px; fill: #42564e; }
+.progress-card summary { cursor: pointer; padding: 12px 0; }
+.progress-card table { width: 100%; border-collapse: collapse; }
+.progress-card th, .progress-card td { text-align: left; padding: 8px; border-bottom: 1px solid #e4ebe7; }
+.record-value { font-size: 1.8rem; font-weight: 700; color: #176b56; margin: 12px 0; }
