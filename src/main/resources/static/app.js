@@ -899,6 +899,7 @@ function updateRestWorkoutState() {
 
 async function saveWorkout(event) {
     event.preventDefault();
+    if (saveWorkoutButton.disabled || restConfirmationPending) return;
     clearWorkoutFormStatus();
 
     if (!workoutForm.reportValidity()) {
@@ -912,7 +913,7 @@ async function saveWorkout(event) {
             .map(createExercisePayload);
 
     if (resting && editingWorkoutName && editingWorkoutName.toLowerCase() !== "rest"
-            && !window.confirm("Replace this workout with Rest? Its exercises and sets will be removed when you save.")) return;
+            && !await confirmRestConversion()) return;
 
     if (!resting && exercises.length === 0) {
         showWorkoutFormError(
@@ -997,6 +998,21 @@ function setWorkoutSaving(saving) {
     saveWorkoutButton.textContent = saving
         ? "Saving…"
         : "Save Workout";
+}
+
+let restConfirmationPending = false;
+function confirmRestConversion() {
+    const dialog = document.querySelector("#rest-confirm-dialog");
+    if (restConfirmationPending) return Promise.resolve(false);
+    restConfirmationPending = true;
+    dialog.returnValue = "cancel";
+    return new Promise(resolve => {
+        dialog.addEventListener("close", () => {
+            restConfirmationPending = false;
+            resolve(dialog.returnValue === "confirm");
+        }, {once: true});
+        dialog.showModal();
+    });
 }
 
 function clearWorkoutFormStatus() {

@@ -240,3 +240,8 @@ dialog .status { margin-top: 16px; }
 #account-dialog { max-width: 560px; }
 #delete-account-form { display: grid; gap: 14px; margin: 24px 0; padding-top: 20px; border-top: 1px solid #dce4e1; }
 #delete-account-button { color: #9b2525; border-color: #9b2525; }
+.confirmation-dialog { max-width: 460px; }
+.confirmation-dialog h2 { font-size: 1.35rem; line-height: 1.3; }
+.confirmation-description { color: var(--muted); margin: 16px 0 24px; line-height: 1.6; }
+.confirmation-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.confirmation-actions button { flex: 1 1 150px; }

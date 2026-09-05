@@ -149,6 +149,27 @@ test('missing nutrition differs from an actual zero, including progress label', 
     assert.equal(h.get('#protein-target').textContent, 'Daily target 180g');
 });
 
+test('rest confirmation cancels by default, confirms explicitly and prevents duplicate prompts', async () => {
+    const h = harness();
+    const dialog = h.get('#rest-confirm-dialog');
+    let close;
+    let opened = 0;
+    dialog.addEventListener = (event, callback) => { if (event === 'close') close = callback; };
+    dialog.showModal = () => { opened++; };
+    const cancelled = h.run('confirmRestConversion()');
+    assert.equal(dialog.returnValue, 'cancel');
+    assert.equal(await h.run('confirmRestConversion()'), false);
+    assert.equal(opened, 1);
+    close();
+    assert.equal(await cancelled, false);
+    const confirmed = h.run('confirmRestConversion()');
+    dialog.returnValue = 'confirm'; close();
+    assert.equal(await confirmed, true);
+    const reopened = h.run('confirmRestConversion()');
+    assert.equal(dialog.returnValue, 'cancel');
+    close(); await reopened;
+});
+
 test('large calorie values are grouped and a zero target remains valid progress', () => {
     const h = harness();
     h.run('updateMacro("calories", 2450, 0, "")');
