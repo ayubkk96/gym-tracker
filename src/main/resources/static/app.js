@@ -63,15 +63,51 @@ const setEditorTemplate =
 
 const workoutFormStatus =
     document.querySelector("#workout-form-status");
+const currentUser =
+    document.querySelector("#current-user");
+const logoutButton =
+    document.querySelector("#logout-button");
 
 let currentDashboard = null;
 let editingWorkoutName = null;
+let csrfToken = null;
+let csrfHeaderName = "X-CSRF-TOKEN";
 
 dateInput.value = getLocalDate();
 
 loadButton.addEventListener("click", loadDashboard);
+logoutButton.addEventListener("click", logout);
 
-loadDashboard();
+initialiseDashboard();
+
+async function initialiseDashboard() {
+    try {
+        const response = await fetch("/api/auth/session");
+
+        if (!response.ok) {
+            throw new Error(
+                `Session request failed: ${response.status}`
+            );
+        }
+
+        const session = await response.json();
+
+        if (!session.authenticated) {
+            redirectToLogin();
+            return;
+        }
+
+        csrfToken = session.csrfToken;
+        csrfHeaderName = session.csrfHeaderName;
+        currentUser.textContent =
+            session.displayName || session.email;
+
+        await loadDashboard();
+    } catch (error) {
+        console.error(error);
+        showError("Could not initialise your dashboard.");
+    }
+}
 
 async function loadDashboard() {
     const date = dateInput.value;
@@ -87,6 +123,8 @@ async function loadDashboard() {
         const response = await fetch(
             `/api/dashboard?date=${encodeURIComponent(date)}`
         );
+
+        requireAuthenticated(response);
 
         if (!response.ok) {
             throw new Error(
@@ -555,11 +593,11 @@ async function saveNutrition(event) {
     try {
         const response = await fetch("/api/nutrition", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: mutationHeaders(),
             body: JSON.stringify(payload)
         });
+
+        requireAuthenticated(response, true);
 
         if (!response.ok) {
             throw new Error(
@@ -835,11 +873,11 @@ async function saveWorkout(event) {
     try {
         const response = await fetch("/api/workouts", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: mutationHeaders(),
             body: JSON.stringify(payload)
         });
+
+        requireAuthenticated(response, true);
 
         if (!response.ok) {
             throw new Error(
@@ -915,4 +953,55 @@ function showError(message) {
     statusMessage.textContent = message;
     statusMessage.classList.remove("success");
     statusMessage.classList.add("error");
+}
+
+async function logout() {
+    if (!csrfToken) {
+        redirectToLogin();
+        return;
+    }
+
+    logoutButton.disabled = true;
+    logoutButton.textContent = "Signing out…";
+
+    try {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            headers: {
+                [csrfHeaderName]: csrfToken
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `Logout request failed: ${response.status}`
+            );
+        }
+
+        redirectToLogin();
+    } catch (error) {
+        console.error(error);
+        showError("Could not sign out. Please try again.");
+        logoutButton.disabled = false;
+        logoutButton.textContent = "Sign Out";
+    }
+}
+
+function mutationHeaders() {
+    return {
+        [csrfHeaderName]: csrfToken,
+        "Content-Type": "application/json"
+    };
+}
+
+function requireAuthenticated(response, includeForbidden = false) {
+    if (response.status === 401
+            || (includeForbidden && response.status === 403)) {
+        redirectToLogin();
+        throw new Error("Authentication required.");
+    }
+}
+
+function redirectToLogin() {
+    window.location.replace("/login.html");
 }

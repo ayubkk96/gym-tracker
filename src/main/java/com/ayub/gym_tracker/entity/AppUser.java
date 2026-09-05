@@ -24,6 +24,9 @@ public class AppUser {
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
 
+    @Column(name = "password_hash", length = 100)
+    private String passwordHash;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -31,9 +34,14 @@ public class AppUser {
     protected AppUser() {
     }
 
-    public AppUser(String email, String displayName) {
+    public AppUser(
+            String email,
+            String displayName,
+            String passwordHash
+    ) {
         this.email = email;
         this.displayName = displayName;
+        this.passwordHash = passwordHash;
     }
 
     public Long getId() {
@@ -48,11 +56,23 @@ public class AppUser {
         return displayName;
     }
 
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public boolean hasPassword() {
+        return passwordHash != null && !passwordHash.isBlank();
+    }
+
+    public void updatePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

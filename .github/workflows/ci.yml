@@ -41,3 +41,6 @@ jobs:
 
       - name: Verify
         run: mvn --batch-mode --no-transfer-progress verify
+
+      - name: Build deployment image
+        run: docker build --tag gym-tracker:ci .
