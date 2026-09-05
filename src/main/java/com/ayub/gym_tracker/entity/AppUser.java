@@ -27,6 +27,13 @@ public class AppUser {
     @Column(name = "password_hash", length = 100)
     private String passwordHash;
 
+    @Column(name = "password_version", nullable = false)
+    private long passwordVersion;
+
+    public long getPasswordVersion() {
+        return passwordVersion;
+    }
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -74,5 +81,6 @@ public class AppUser {
 
     public void updatePasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+        this.passwordVersion++;
     }
 }

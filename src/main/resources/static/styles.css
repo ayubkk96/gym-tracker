@@ -1,4 +1,9 @@
 /* Shared, responsive training workspace. No external assets or fonts required. */
+.recovery-shell { max-width: 520px; padding-block: 40px; }
+.recovery-shell > .brand { margin-bottom: 24px; }
+.recovery-shell h1 { font-size: 1.7rem; }
+.recovery-shell .field > span, .recovery-shell .form-hint { font-size: .875rem; }
+.recovery-links { margin: 24px 0 0; font-size: .875rem; }
 :root {
     color-scheme: dark;
     --background: #101311;
