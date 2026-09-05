@@ -25,7 +25,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             if (path.isEmpty()) path = request.getRequestURI().substring(request.getContextPath().length());
             int limit = switch (path) {
                 case "/api/auth/login" -> 100;
-                case "/api/users" -> REGISTRATION_GLOBAL_LIMIT;
+                case "/api/users" -> hasProxyClientAddress(request) ? REGISTRATION_GLOBAL_LIMIT : 10;
                 case "/api/auth/password-reset/request" -> 30;
                 case "/api/auth/password-reset/confirm" -> 60;
                 default -> 0;
@@ -34,7 +34,7 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
                 int window = path.equals("/api/users") ? REGISTRATION_WINDOW_SECONDS : 900;
                 try {
                     boolean allowed = limiter.allow("global:" + path, limit, window);
-                    if (allowed && path.equals("/api/users")) {
+                    if (allowed && path.equals("/api/users") && hasProxyClientAddress(request)) {
                         allowed = limiter.allow("registration:" + clientAddress(request),
                                 REGISTRATION_CLIENT_LIMIT, window);
                     }
@@ -61,14 +61,26 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
+    private boolean hasProxyClientAddress(HttpServletRequest request) {
+        return nonBlank(request.getHeader("CF-Connecting-IP"))
+                || nonBlank(request.getHeader("X-Forwarded-For"));
+    }
+
     private String clientAddress(HttpServletRequest request) {
-        // Render sets X-Forwarded-For for proxied requests. Use the left-most address,
-        // which represents the original client, and fall back for local/test traffic.
+        // Render public traffic passes through Cloudflare. Prefer its single-client-IP
+        // header, then fall back to the first X-Forwarded-For address.
+        String cloudflareAddress = request.getHeader("CF-Connecting-IP");
+        if (nonBlank(cloudflareAddress)) return cloudflareAddress.trim();
+
         String forwardedFor = request.getHeader("X-Forwarded-For");
-        if (forwardedFor != null && !forwardedFor.isBlank()) {
+        if (nonBlank(forwardedFor)) {
             String first = forwardedFor.split(",", 2)[0].trim();
             if (!first.isEmpty()) return first;
         }
         return request.getRemoteAddr();
+    }
+
+    private boolean nonBlank(String value) {
+        return value != null && !value.isBlank();
     }
 }
