@@ -21,4 +21,11 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
             Long userId,
             LocalDate workoutDate
     );
+
+    List<WorkoutSession>
+    findByUserIdAndWorkoutDateBetweenOrderByWorkoutDateDescIdAsc(
+            Long userId,
+            LocalDate fromDate,
+            LocalDate toDate
+    );
 }
