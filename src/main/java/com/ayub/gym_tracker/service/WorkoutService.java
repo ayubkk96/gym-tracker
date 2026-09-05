@@ -45,7 +45,7 @@ public class WorkoutService {
     ) {
         AppUser user = currentUserService.getCurrentUser();
 
-        int dayNumber = calculateDayNumber(
+        Integer dayNumber = calculateDayNumber(
                 user,
                 request.date()
         );
@@ -109,7 +109,7 @@ public class WorkoutService {
                 .toList();
     }
 
-    private int calculateDayNumber(
+    private Integer calculateDayNumber(
             AppUser user,
             LocalDate workoutDate
     ) {
@@ -129,13 +129,7 @@ public class WorkoutService {
                 workoutDate
         );
 
-        if (difference < 0) {
-            throw new IllegalArgumentException(
-                    "Date cannot be before " + startDate
-            );
-        }
-
-        return Math.toIntExact(difference) + 1;
+        return difference < 0 ? null : Math.toIntExact(difference) + 1;
     }
 
     private void addExercises(

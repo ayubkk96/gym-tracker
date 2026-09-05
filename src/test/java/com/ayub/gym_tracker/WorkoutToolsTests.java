@@ -49,6 +49,38 @@ class WorkoutToolsTests {
                 .andExpect(status().isOk()).andReturn().getRequest().getSession(false);
     }
 
+    @Test void earlierDatesCanBeViewedCreatedAndEditedWithoutRenumbering() throws Exception {
+        var session = account(); // Tracking starts 2026-01-01.
+        long userId = jdbc.queryForObject("SELECT max(id) FROM app_users", Long.class);
+        jdbc.update("INSERT INTO daily_targets(user_id,effective_from,calories,protein_g,carbs_g,fat_g) VALUES (?, '2026-02-01', 2200, 160, 250, 70)", userId);
+        mvc.perform(get("/api/dashboard").session(session).param("date","2025-12-31"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.date").value("2025-12-31"))
+                .andExpect(jsonPath("$.targets.calories").value(2450))
+                .andExpect(jsonPath("$.nutrition").isEmpty()).andExpect(jsonPath("$.workouts").isEmpty());
+        String nutrition="{\"date\":\"2025-12-31\",\"calories\":2000,\"proteinG\":150,\"carbsG\":200,\"fatG\":70}";
+        for (int calories : new int[]{2000,2100}) {
+            mvc.perform(post("/api/nutrition").session(session).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                    .content(nutrition.replace("2000",String.valueOf(calories)))).andExpect(status().is2xxSuccessful());
+        }
+        workout(session,"2025-12-31",8);
+        workout(session,"2025-12-31",10);
+        workout(session,"2026-01-01",12);
+        entityManager.flush(); entityManager.clear();
+        mvc.perform(get("/api/dashboard").session(session).param("date","2025-12-31"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.nutrition.calories").value(2100))
+                .andExpect(jsonPath("$.nutrition.day").isEmpty())
+                .andExpect(jsonPath("$.workouts.length()").value(1))
+                .andExpect(jsonPath("$.workouts[0].day").isEmpty())
+                .andExpect(jsonPath("$.workouts[0].exercises[0].sets[0].reps").value(10));
+        mvc.perform(get("/api/dashboard").session(session).param("date","2026-01-01"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.workouts[0].day").value(1))
+                .andExpect(jsonPath("$.targets.calories").value(2450));
+        mvc.perform(get("/api/dashboard").session(session).param("date","2026-02-01"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.targets.calories").value(2200));
+        assertEquals(1,jdbc.queryForObject("SELECT count(*) FROM nutrition_logs WHERE user_id=? AND log_date='2025-12-31'",Integer.class,userId));
+        assertEquals(java.sql.Date.valueOf("2026-01-01"),jdbc.queryForObject("SELECT min(effective_from) FROM daily_targets WHERE user_id=?",java.sql.Date.class,userId));
+    }
+
     @Test void exportAndDeletionAreScopedAndCascadeAllOwnedData() throws Exception {
         var alice = account();
         long aliceId = jdbc.queryForObject("SELECT max(id) FROM app_users", Long.class);
