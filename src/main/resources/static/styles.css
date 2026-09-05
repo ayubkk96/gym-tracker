@@ -1,4 +1,13 @@
 /* Shared, responsive training workspace. No external assets or fonts required. */
+.template-tools { padding: 16px; margin-bottom: 22px; border: 1px solid var(--border); border-radius: 12px; }
+.template-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.template-tools .status { margin: 12px 0 0; }
+.template-save { margin-top: 16px; }
+.field select { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--background); color: var(--text); font: inherit; font-size: 16px; }
+.comparison-status { padding: 12px 0; margin: 8px 0; color: var(--muted); font-size: .875rem; }
+.comparison-status:empty, .previous-set:empty, .previous-exercise:empty { display: none; }
+.previous-set { grid-column: 1 / -1; color: var(--accent); font-size: .8125rem; overflow-wrap: anywhere; }
+.previous-exercise { font-size: .8125rem; }
 .recovery-shell { max-width: 520px; padding-block: 40px; }
 .recovery-shell > .brand { margin-bottom: 24px; }
 .recovery-shell h1 { font-size: 1.7rem; }

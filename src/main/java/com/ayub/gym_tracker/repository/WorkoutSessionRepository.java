@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, Long> {
 
+    Optional<WorkoutSession> findFirstByUserIdAndNameIgnoreCaseAndWorkoutDateBeforeOrderByWorkoutDateDescIdDesc(
+            Long userId, String name, LocalDate before);
+
     Optional<WorkoutSession>
     findByUserIdAndWorkoutDateAndNameIgnoreCase(
             Long userId,

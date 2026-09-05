@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
+    <script src="workout-tools.js" defer></script>
 </head>
 
 <body>
@@ -301,6 +302,16 @@
                 </button>
             </div>
 
+            <div id="workout-template-tools" class="template-tools">
+                <label class="field" for="workout-template-select"><span>Start from a template</span>
+                    <select id="workout-template-select"><option value="">Choose a template</option></select>
+                </label>
+                <div class="template-actions">
+                    <button id="apply-workout-template" class="secondary-button" type="button" disabled>Use template</button>
+                    <button id="delete-workout-template" class="secondary-button" type="button" disabled>Delete template</button>
+                </div>
+                <p id="workout-template-status" class="status" role="status"></p>
+            </div>
             <div class="form-grid">
                 <label class="field">
                     <span>Date</span>
@@ -331,6 +342,7 @@
                 </label>
             </div>
 
+            <p id="previous-workout-status" class="comparison-status" role="status"></p>
             <div id="exercise-editor-section">
                 <div class="editor-section-heading">
                     <h3>Exercises</h3>
@@ -344,6 +356,8 @@
 
                 <div id="exercise-editors"></div>
                 <p class="section-caption">For bodyweight sets, leave weight blank. Add as many sets as you need, up to 20 per exercise.</p>
+                <button id="save-workout-template" class="secondary-button template-save" type="button">Save as template</button>
+                <p class="section-caption">Saves exercise names, notes and set counts. Weights and reps stay in your workout log.</p>
             </div>
 
             <p
@@ -399,6 +413,7 @@
             </div>
 
             <div class="set-editors"></div>
+            <p class="previous-exercise section-caption"></p>
 
             <label class="field">
                 <span>Exercise notes</span>
@@ -439,6 +454,7 @@
                     aria-label="Remove set">
                 ×
             </button>
+            <span class="previous-set"></span>
         </div>
     </template>
 </main>

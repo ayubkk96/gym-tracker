@@ -742,6 +742,7 @@ workoutForm.addEventListener(
 );
 
 function openWorkoutForm(workout = null) {
+    resetWorkoutTools(Boolean(workout));
     workoutForm.reset();
     exerciseEditors.replaceChildren();
     clearWorkoutFormStatus();
@@ -770,6 +771,8 @@ function openWorkoutForm(workout = null) {
 
     updateRestWorkoutState();
     workoutDialog.showModal();
+    loadWorkoutTemplates();
+    schedulePreviousWorkout();
 }
 
 function addExerciseEditor(exercise = null) {
@@ -852,6 +855,7 @@ function updateExerciseNumbers() {
                 ".exercise-editor-number"
             ).textContent = `Exercise ${index + 1}`;
         });
+    renderPreviousSets();
 }
 
 function updateSetNumbers(exerciseEditor) {
@@ -861,6 +865,7 @@ function updateSetNumbers(exerciseEditor) {
                 ".set-editor-number"
             ).textContent = `Set ${index + 1}`;
         });
+    renderPreviousSets();
 }
 
 function updateRestWorkoutState() {
@@ -886,6 +891,8 @@ function updateRestWorkoutState() {
 
         workoutName.readOnly = editingWorkoutName != null;
     }
+    updateTemplateControls();
+    schedulePreviousWorkout();
 }
 
 async function saveWorkout(event) {
@@ -979,6 +986,7 @@ function createExercisePayload(editor) {
 }
 
 function setWorkoutSaving(saving) {
+    setWorkoutToolsSaving(saving);
     saveWorkoutButton.disabled = saving;
     saveWorkoutButton.textContent = saving
         ? "Saving…"

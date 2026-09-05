@@ -4,6 +4,32 @@ Gym Tracker is a Spring Boot and PostgreSQL application for logging daily
 nutrition, workouts, exercise sets, targets, weekly averages, and recent
 history.
 
+## Workout templates and comparisons
+
+In **Log Workout**, add exercise names and set counts, then choose **Save as
+template**. Templates store names, notes and 1–20 sets per exercise; saving a
+template does not log a workout. Saving the same template name (ignoring case)
+replaces that account's template after confirmation. Choose **Use template** to
+start a new session with empty weights and reps. Applying a template confirms
+replacement of an existing draft, and is unavailable while editing a saved workout.
+
+Enter a workout name and date to see its most recent session strictly before
+that date. Each set shows the previous weight and reps. Rep differences appear
+only at the same weight, with bodyweight distinct from zero kilograms. Exercise
+names match ignoring case and surrounding spaces; repeated names match by their
+occurrence and sets by position. Consistent workout/exercise names give useful
+comparisons. Missing history or a failed lookup never prevents logging.
+
+Authenticated API endpoints (writes require CSRF):
+
+- `GET /api/workout-templates`: list your templates.
+- `POST /api/workout-templates`: upsert `{name, notes, exercises: [{name, notes, setCount}]}`.
+- `DELETE /api/workout-templates/{id}`: delete your template, without changing logs.
+- `GET /api/workouts/previous?name=Back&before=2026-09-05`: previous session or HTTP 204.
+
+Flyway V4 creates the template tables and a history lookup index automatically.
+All template operations and previous-session lookups use the signed-in account.
+
 ## Requirements
 
 - Java 21
