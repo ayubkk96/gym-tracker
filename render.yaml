@@ -1,0 +1,52 @@
+# Applying this Blueprint creates BILLABLE resources. Review Render's cost
+# estimate before confirming. Committing/merging this file does not deploy it.
+services:
+  - type: web
+    name: gym-tracker
+    runtime: docker
+    branch: master
+    region: frankfurt
+    plan: 0.5c-512mb
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=60.0 -XX:+ExitOnOutOfMemoryError
+      - key: DB_HOST
+        fromDatabase:
+          name: gym-tracker-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: gym-tracker-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: gym-tracker-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: gym-tracker-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: gym-tracker-db
+          property: password
+
+databases:
+  - name: gym-tracker-db
+    region: frankfurt
+    plan: 0.1c-256mb
+    postgresMajorVersion: "17"
+    databaseName: gym_tracker
+    user: gym_user
+    diskSizeGB: 1
+    # Private connections only. Temporarily allow just your own IP if restoring.
+    ipAllowList: []
+
+previews:
+  generation: "off"
