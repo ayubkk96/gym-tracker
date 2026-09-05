@@ -193,7 +193,8 @@ public class WorkoutService {
         return new WorkoutResponse(
                 session.getName(),
                 session.getDayNumber(),
-                exercises
+                exercises,
+                session.getNotes()
         );
     }
 

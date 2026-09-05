@@ -6,6 +6,7 @@ import java.util.List;
 public record WorkoutResponse(
         String name,
         int day,
-        List<ExerciseResponse> exercises
+        List<ExerciseResponse> exercises,
+        String notes
 ) {
 }

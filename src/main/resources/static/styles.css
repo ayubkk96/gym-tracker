@@ -184,10 +184,26 @@ progress::-moz-progress-bar {
     overflow: hidden;
 }
 
-.workout-title {
+.workout-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
     padding: 18px 20px;
     border-bottom: 1px solid var(--border);
     background: var(--surface-light);
+}
+
+.workout-title {
+    margin: 0;
+}
+
+.workout-note,
+.workout-empty {
+    margin: 0;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
 }
 
 .exercise {
@@ -254,6 +270,202 @@ progress::-moz-progress-bar {
     text-align: center;
 }
 
+.secondary-button {
+    border: 1px solid var(--border);
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.secondary-button:hover {
+    background: var(--border);
+}
+
+.compact-button {
+    min-height: 36px;
+    padding-inline: 12px;
+    font-size: 0.82rem;
+}
+
+dialog {
+    width: min(100% - 24px, 560px);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 0;
+}
+
+dialog.workout-form-dialog {
+    width: min(100% - 24px, 760px);
+}
+
+dialog::backdrop {
+    background: rgb(0 0 0 / 75%);
+    backdrop-filter: blur(4px);
+}
+
+dialog form {
+    padding: 24px;
+}
+
+.dialog-heading,
+.editor-section-heading,
+.exercise-editor-heading,
+.sets-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.dialog-heading {
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+.icon-button {
+    width: 42px;
+    min-height: 42px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    padding: 0;
+    font-size: 1.5rem;
+}
+
+.icon-button:hover {
+    background: var(--surface-light);
+    color: var(--text);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.field {
+    display: grid;
+    gap: 7px;
+}
+
+.field span,
+.sets-heading > span {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--background);
+    color: var(--text);
+    padding: 12px;
+    font: inherit;
+}
+
+.field input:focus,
+.field textarea:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+}
+
+.field textarea {
+    resize: vertical;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.rest-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    color: var(--text);
+}
+
+.rest-option input {
+    width: 20px;
+    min-height: 20px;
+    accent-color: var(--gold);
+}
+
+.editor-section-heading {
+    margin-block: 28px 12px;
+}
+
+.editor-section-heading h3 {
+    margin: 0;
+}
+
+#exercise-editors {
+    display: grid;
+    gap: 14px;
+}
+
+.exercise-editor {
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface-light);
+    padding: 16px;
+}
+
+.exercise-editor-heading strong,
+.set-editor-number {
+    color: var(--gold-light);
+}
+
+.sets-heading {
+    margin-top: 2px;
+}
+
+.set-editors {
+    display: grid;
+    gap: 10px;
+}
+
+.set-editor {
+    display: grid;
+    grid-template-columns: 64px 1fr 1fr 42px;
+    align-items: end;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--surface);
+}
+
+.set-editor-number {
+    align-self: center;
+    font-size: 0.85rem;
+}
+
+.set-editor .icon-button,
+.exercise-editor-heading .icon-button {
+    width: 38px;
+    min-height: 38px;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.status.success {
+    color: #4ade80;
+}
+
 @media (max-width: 650px) {
     .header {
         align-items: stretch;
@@ -274,131 +486,33 @@ progress::-moz-progress-bar {
         gap: 12px;
     }
 
-    .secondary-button {
-        border: 1px solid var(--border);
-        background: var(--surface-light);
-        color: var(--text);
-    }
-
-    .secondary-button:hover {
-        background: var(--border);
-    }
-
-    dialog {
-        width: min(100% - 24px, 560px);
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        background: var(--surface);
-        color: var(--text);
-        padding: 0;
-    }
-
-    dialog::backdrop {
-        background: rgb(0 0 0 / 75%);
-        backdrop-filter: blur(4px);
-    }
-
-    dialog form {
-        padding: 24px;
-    }
-
-    .dialog-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 24px;
-    }
-
-    .icon-button {
-        width: 42px;
-        min-height: 42px;
-        border: 1px solid var(--border);
-        background: transparent;
-        color: var(--muted);
-        padding: 0;
-        font-size: 1.5rem;
-    }
-
-    .icon-button:hover {
-        background: var(--surface-light);
-        color: var(--text);
+    .section-heading,
+    .section-actions {
+        align-items: stretch;
+        flex-direction: column;
     }
 
     .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
-
-    .field {
-        display: grid;
-        gap: 7px;
-    }
-
-    .field span {
-        color: var(--muted);
-        font-size: 0.85rem;
-    }
-
-    .field input,
-    .field textarea {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        background: var(--background);
-        color: var(--text);
-        padding: 12px;
-        font: inherit;
-    }
-
-    .field input:focus,
-    .field textarea:focus {
-        outline: 2px solid var(--gold);
-        outline-offset: 1px;
-    }
-
-    .field textarea {
-        resize: vertical;
+        grid-template-columns: 1fr;
     }
 
     .full-width {
+        grid-column: auto;
+    }
+
+    .set-editor {
+        grid-template-columns: 1fr 1fr 42px;
+    }
+
+    .set-editor-number {
         grid-column: 1 / -1;
     }
 
     .dialog-actions {
-        display: flex;
-        justify-content: end;
-        gap: 10px;
-        margin-top: 12px;
+        flex-direction: column-reverse;
     }
 
-    .status.success {
-        color: #4ade80;
-    }
-
-    @media (max-width: 650px) {
-        .section-heading,
-        .section-actions {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .full-width {
-            grid-column: auto;
-        }
-
-        .dialog-actions {
-            flex-direction: column-reverse;
-        }
-
-        .dialog-actions button {
-            width: 100%;
-        }
+    .dialog-actions button {
+        width: 100%;
     }
 }

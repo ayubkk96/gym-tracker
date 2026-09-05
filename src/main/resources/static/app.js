@@ -23,7 +23,47 @@ const saveNutritionButton =
 const nutritionFormStatus =
     document.querySelector("#nutrition-form-status");
 
+const workoutDialog =
+    document.querySelector("#workout-dialog");
+
+const workoutForm =
+    document.querySelector("#workout-form");
+
+const openWorkoutButton =
+    document.querySelector("#open-workout-form");
+
+const closeWorkoutButton =
+    document.querySelector("#close-workout-form");
+
+const cancelWorkoutButton =
+    document.querySelector("#cancel-workout-form");
+
+const saveWorkoutButton =
+    document.querySelector("#save-workout");
+
+const addExerciseButton =
+    document.querySelector("#add-exercise");
+
+const restWorkoutCheckbox =
+    document.querySelector("#rest-workout");
+
+const exerciseEditorSection =
+    document.querySelector("#exercise-editor-section");
+
+const exerciseEditors =
+    document.querySelector("#exercise-editors");
+
+const exerciseEditorTemplate =
+    document.querySelector("#exercise-editor-template");
+
+const setEditorTemplate =
+    document.querySelector("#set-editor-template");
+
+const workoutFormStatus =
+    document.querySelector("#workout-form-status");
+
 let currentDashboard = null;
+let editingWorkoutName = null;
 
 dateInput.value = getLocalDate();
 
@@ -167,11 +207,43 @@ function createWorkoutCard(workout) {
     const card = document.createElement("article");
     card.className = "workout-card";
 
+    const titleRow = document.createElement("div");
+    titleRow.className = "workout-title-row";
+
     const title = document.createElement("h3");
     title.className = "workout-title";
     title.textContent = workout.name;
 
-    card.append(title);
+    const editButton = document.createElement("button");
+    editButton.className = "secondary-button compact-button";
+    editButton.type = "button";
+    editButton.textContent = "Edit";
+    editButton.addEventListener(
+        "click",
+        () => openWorkoutForm(workout)
+    );
+
+    titleRow.append(title, editButton);
+    card.append(titleRow);
+
+    if (workout.notes) {
+        const workoutNotes = document.createElement("p");
+        workoutNotes.className = "workout-note";
+        workoutNotes.textContent = workout.notes;
+        card.append(workoutNotes);
+    }
+
+    if (workout.exercises.length === 0) {
+        const emptyWorkout = document.createElement("p");
+        emptyWorkout.className = "workout-empty";
+        emptyWorkout.textContent =
+            workout.name.toLowerCase() === "rest"
+                ? "Recovery day"
+                : "No exercises recorded.";
+
+        card.append(emptyWorkout);
+        return card;
+    }
 
     for (const exercise of workout.exercises) {
         card.append(createExercise(exercise));
@@ -235,11 +307,6 @@ function setLoading(loading) {
         statusMessage.textContent = "Loading dashboard…";
         statusMessage.classList.remove("error");
     }
-}
-
-function showError(message) {
-    statusMessage.textContent = message;
-    statusMessage.classList.add("error");
 }
 
 function getLocalDate() {
@@ -405,6 +472,290 @@ function setNutritionSaving(saving) {
 function clearNutritionFormStatus() {
     nutritionFormStatus.textContent = "";
     nutritionFormStatus.classList.remove("error");
+}
+
+openWorkoutButton.addEventListener(
+    "click",
+    () => openWorkoutForm()
+);
+
+closeWorkoutButton.addEventListener(
+    "click",
+    () => workoutDialog.close()
+);
+
+cancelWorkoutButton.addEventListener(
+    "click",
+    () => workoutDialog.close()
+);
+
+addExerciseButton.addEventListener(
+    "click",
+    () => addExerciseEditor()
+);
+
+restWorkoutCheckbox.addEventListener(
+    "change",
+    updateRestWorkoutState
+);
+
+workoutForm.addEventListener(
+    "submit",
+    saveWorkout
+);
+
+function openWorkoutForm(workout = null) {
+    workoutForm.reset();
+    exerciseEditors.replaceChildren();
+    clearWorkoutFormStatus();
+
+    editingWorkoutName = workout?.name ?? null;
+
+    document.querySelector("#workout-form-title").textContent =
+        workout ? "Edit Workout" : "Log Workout";
+
+    workoutForm.elements.date.value = dateInput.value;
+    workoutForm.elements.workout.readOnly = workout != null;
+
+    if (workout) {
+        workoutForm.elements.workout.value = workout.name;
+        workoutForm.elements.notes.value = workout.notes ?? "";
+
+        restWorkoutCheckbox.checked =
+            workout.name.toLowerCase() === "rest";
+
+        for (const exercise of workout.exercises) {
+            addExerciseEditor(exercise);
+        }
+    } else {
+        addExerciseEditor();
+    }
+
+    updateRestWorkoutState();
+    workoutDialog.showModal();
+}
+
+function addExerciseEditor(exercise = null) {
+    if (exerciseEditors.children.length >= 20) {
+        showWorkoutFormError(
+            "A workout can contain up to 20 exercises."
+        );
+        return;
+    }
+
+    const editor = exerciseEditorTemplate.content
+        .firstElementChild
+        .cloneNode(true);
+
+    editor.querySelector(".exercise-name").value =
+        exercise?.name ?? "";
+
+    editor.querySelector(".exercise-notes").value =
+        exercise?.notes ?? "";
+
+    editor.querySelector(".remove-exercise")
+        .addEventListener("click", () => {
+            editor.remove();
+            updateExerciseNumbers();
+        });
+
+    editor.querySelector(".add-set")
+        .addEventListener(
+            "click",
+            () => addSetEditor(editor)
+        );
+
+    const sets = exercise
+        ? exercise.sets
+        : [null, null, null];
+
+    for (const set of sets) {
+        addSetEditor(editor, set);
+    }
+
+    exerciseEditors.append(editor);
+    updateExerciseNumbers();
+}
+
+function addSetEditor(exerciseEditor, set = null) {
+    const setEditors =
+        exerciseEditor.querySelector(".set-editors");
+
+    if (setEditors.children.length >= 20) {
+        showWorkoutFormError(
+            "An exercise can contain up to 20 sets."
+        );
+        return;
+    }
+
+    const setEditor = setEditorTemplate.content
+        .firstElementChild
+        .cloneNode(true);
+
+    setEditor.querySelector(".set-weight").value =
+        set?.weightKg ?? "";
+
+    setEditor.querySelector(".set-reps").value =
+        set?.reps ?? "";
+
+    setEditor.querySelector(".remove-set")
+        .addEventListener("click", () => {
+            setEditor.remove();
+            updateSetNumbers(exerciseEditor);
+        });
+
+    setEditors.append(setEditor);
+    updateSetNumbers(exerciseEditor);
+}
+
+function updateExerciseNumbers() {
+    [...exerciseEditors.children]
+        .forEach((editor, index) => {
+            editor.querySelector(
+                ".exercise-editor-number"
+            ).textContent = `Exercise ${index + 1}`;
+        });
+}
+
+function updateSetNumbers(exerciseEditor) {
+    [...exerciseEditor.querySelectorAll(".set-editor")]
+        .forEach((editor, index) => {
+            editor.querySelector(
+                ".set-editor-number"
+            ).textContent = `Set ${index + 1}`;
+        });
+}
+
+function updateRestWorkoutState() {
+    const resting = restWorkoutCheckbox.checked;
+    const workoutName = workoutForm.elements.workout;
+
+    exerciseEditorSection.hidden = resting;
+
+    exerciseEditorSection
+        .querySelectorAll("input, textarea, button")
+        .forEach(element => {
+            element.disabled = resting;
+        });
+
+    if (resting) {
+        workoutName.value = "Rest";
+        workoutName.readOnly = true;
+    } else {
+        if (!editingWorkoutName
+                && workoutName.value === "Rest") {
+            workoutName.value = "";
+        }
+
+        workoutName.readOnly = editingWorkoutName != null;
+    }
+}
+
+async function saveWorkout(event) {
+    event.preventDefault();
+    clearWorkoutFormStatus();
+
+    if (!workoutForm.reportValidity()) {
+        return;
+    }
+
+    const resting = restWorkoutCheckbox.checked;
+    const exercises = resting
+        ? []
+        : [...exerciseEditors.children]
+            .map(createExercisePayload);
+
+    if (!resting && exercises.length === 0) {
+        showWorkoutFormError(
+            "Add at least one exercise or select rest day."
+        );
+        return;
+    }
+
+    const payload = {
+        date: workoutForm.elements.date.value,
+        workout: resting
+            ? "Rest"
+            : workoutForm.elements.workout.value.trim(),
+        notes: optionalText(
+            workoutForm.elements.notes.value
+        ),
+        exercises
+    };
+
+    setWorkoutSaving(true);
+
+    try {
+        const response = await fetch("/api/workouts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `Workout request failed: ${response.status}`
+            );
+        }
+
+        const result = await response.json();
+
+        workoutDialog.close();
+        dateInput.value = payload.date;
+        await loadDashboard();
+
+        showSuccess(
+            result.action === "updated"
+                ? "Workout updated successfully."
+                : "Workout saved successfully."
+        );
+    } catch (error) {
+        console.error(error);
+        showWorkoutFormError("Could not save workout.");
+    } finally {
+        setWorkoutSaving(false);
+    }
+}
+
+function createExercisePayload(editor) {
+    const sets = [...editor.querySelectorAll(".set-editor")]
+        .map(setEditor => ({
+            weightKg: optionalNumber(
+                setEditor.querySelector(".set-weight").value
+            ),
+            reps: Number(
+                setEditor.querySelector(".set-reps").value
+            )
+        }));
+
+    return {
+        name: editor.querySelector(".exercise-name")
+            .value
+            .trim(),
+        sets,
+        notes: optionalText(
+            editor.querySelector(".exercise-notes").value
+        )
+    };
+}
+
+function setWorkoutSaving(saving) {
+    saveWorkoutButton.disabled = saving;
+    saveWorkoutButton.textContent = saving
+        ? "Saving…"
+        : "Save Workout";
+}
+
+function clearWorkoutFormStatus() {
+    workoutFormStatus.textContent = "";
+    workoutFormStatus.classList.remove("error");
+}
+
+function showWorkoutFormError(message) {
+    workoutFormStatus.textContent = message;
+    workoutFormStatus.classList.add("error");
 }
 
 function showSuccess(message) {
