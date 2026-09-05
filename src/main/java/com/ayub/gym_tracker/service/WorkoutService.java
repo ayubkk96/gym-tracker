@@ -1,12 +1,12 @@
 package com.ayub.gym_tracker.service;
 
 import com.ayub.gym_tracker.dto.request.ExerciseRequest;
-import com.ayub.gym_tracker.dto.response.ExerciseResponse;
 import com.ayub.gym_tracker.dto.request.WorkoutRequest;
-import com.ayub.gym_tracker.dto.response.WorkoutResponse;
-import com.ayub.gym_tracker.dto.result.WorkoutSaveResult;
 import com.ayub.gym_tracker.dto.request.WorkoutSetRequest;
+import com.ayub.gym_tracker.dto.response.ExerciseResponse;
+import com.ayub.gym_tracker.dto.response.WorkoutResponse;
 import com.ayub.gym_tracker.dto.response.WorkoutSetResponse;
+import com.ayub.gym_tracker.dto.result.WorkoutSaveResult;
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.entity.DailyTarget;
 import com.ayub.gym_tracker.entity.ExerciseLog;
@@ -70,11 +70,12 @@ public class WorkoutService {
                     request.date(),
                     dayNumber,
                     workoutName,
-                    null
+                    cleanNotes(request.notes())
             );
         } else {
             session = existingSession;
             session.updateDayNumber(dayNumber);
+            session.updateNotes(cleanNotes(request.notes()));
             session.clearExercises();
 
             // Delete the old child rows before inserting replacements.

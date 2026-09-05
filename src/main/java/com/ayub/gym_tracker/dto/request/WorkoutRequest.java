@@ -16,8 +16,11 @@ public record WorkoutRequest(
         @Size(max = 100)
         String workout,
 
+        @Size(max = 500)
+        String notes,
+
         @NotNull
-        @Size(min = 1, max = 20)
+        @Size(max = 20)
         List<@Valid ExerciseRequest> exercises
 ) {
 }

@@ -13,7 +13,7 @@ public record ExerciseRequest(
         String name,
 
         @NotNull
-        @Size(min = 1, max = 20)
+        @Size(max = 20)
         List<@Valid WorkoutSetRequest> sets,
 
         @Size(max = 500)
