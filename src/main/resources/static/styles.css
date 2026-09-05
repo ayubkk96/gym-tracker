@@ -240,3 +240,6 @@ dialog .status { margin-top: 16px; }
 .progress-card table { width: 100%; border-collapse: collapse; }
 .progress-card th, .progress-card td { text-align: left; padding: 8px; border-bottom: 1px solid #e4ebe7; }
 .record-value { font-size: 1.8rem; font-weight: 700; color: #176b56; margin: 12px 0; }
+#account-dialog { max-width: 560px; }
+#delete-account-form { display: grid; gap: 14px; margin: 24px 0; padding-top: 20px; border-top: 1px solid #dce4e1; }
+#delete-account-button { color: #9b2525; border-color: #9b2525; }
