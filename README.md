@@ -39,15 +39,12 @@ Authenticated API endpoints (writes require CSRF):
 Flyway V4 creates the template tables and a history lookup index automatically.
 All template operations and previous-session lookups use the signed-in account.
 
-## Progress and personal records
+## Personal records
 
-The dashboard's Progress section shows 30, 90 or 365 calendar days ending at the
-selected dashboard date. Bodyweight uses non-null nutrition measurements. Choose
-an exercise for its daily heaviest weighted set and best bodyweight reps per set.
-Dots show actual logged dates, with no invented measurements on missing days.
-Expandable tables provide the exact values for keyboard and screen-reader access.
+The dashboard's Progress section shows personal-record cards for a selected exercise.
+The existing progress API still returns measurement history for API clients.
 
-Records use all history through the selected date, regardless of chart period.
+Records use all history through the selected date.
 Heaviest-set records rank weight first, then reps; bodyweight records rank reps.
 Exact ties retain the earliest date. Zero kilograms is weighted, while null weight
 means bodyweight. Exercise names match ignoring case and surrounding spaces;
