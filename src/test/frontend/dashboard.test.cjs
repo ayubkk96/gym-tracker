@@ -41,7 +41,7 @@ function harness(script = 'app.js') {
 }
 
 test('both pages have unique IDs and every literal JS ID selector exists', () => {
-    for (const [page, script] of [['index.html', 'app.js'], ['index.html', 'workout-tools.js'], ['login.html', 'auth.js'], ['reset-password.html', 'reset-password.js']]) {
+    for (const [page, script] of [['index.html', 'app.js'], ['index.html', 'progress.js'], ['index.html', 'workout-tools.js'], ['login.html', 'auth.js'], ['reset-password.html', 'reset-password.js']]) {
         const html = fs.readFileSync(path.join(root, page), 'utf8');
         const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
         assert.equal(ids.length, new Set(ids).size, `${page} duplicate ID`);

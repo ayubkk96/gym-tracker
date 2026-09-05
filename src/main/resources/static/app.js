@@ -129,6 +129,7 @@ async function initialiseDashboard() {
 async function loadDashboard() {
     const requestId = ++dashboardRequestId;
     const date = dateInput.value;
+    if (typeof loadProgress === "function") loadProgress();
 
     if (!date) {
         setLoading(false);

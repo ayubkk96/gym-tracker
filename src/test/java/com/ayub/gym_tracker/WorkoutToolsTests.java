@@ -48,6 +48,48 @@ class WorkoutToolsTests {
                 .andExpect(status().isOk()).andReturn().getRequest().getSession(false);
     }
 
+    @Test void progressSeparatesBodyweightAndWeightedRecordsAndScopesHistory() throws Exception {
+        var alice = account();
+        var bob = account();
+        workout(alice, "2026-09-01", 8);
+        workout(bob, "2026-09-02", 99);
+        workout(alice, "2026-09-06", 100);
+        for (String date : new String[]{"2026-01-01", "2026-09-03"}) {
+            mvc.perform(post("/api/workouts").session(alice).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                    .content("""
+                            {"date":"%s","workout":"Weighted","exercises":[{"name":" Pull-ups ","sets":[{"weightKg":20,"reps":5}]}]}
+                            """.formatted(date))).andExpect(status().is2xxSuccessful());
+        }
+        mvc.perform(post("/api/nutrition").session(alice).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content("{\"date\":\"2026-09-05\",\"calories\":2000,\"proteinG\":150,\"carbsG\":200,\"fatG\":70,\"weightKg\":93}"))
+                .andExpect(status().is2xxSuccessful());
+        mvc.perform(get("/api/progress").session(alice).param("through", "2026-09-05").param("days", "7").param("exercise", " PULL-UPS "))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.from").value("2026-08-30"))
+                .andExpect(jsonPath("$.exercises.length()").value(1))
+                .andExpect(jsonPath("$.bodyweight[0].value").value(93))
+                .andExpect(jsonPath("$.heaviestSets.length()").value(1))
+                .andExpect(jsonPath("$.heaviestSets[0].value").value(20))
+                .andExpect(jsonPath("$.bodyweightReps.length()").value(1))
+                .andExpect(jsonPath("$.bestBodyweight.reps").value(8))
+                .andExpect(jsonPath("$.heaviest.date").value("2026-01-01"));
+        mvc.perform(get("/api/progress").session(bob).param("through", "2026-09-05").param("exercise", "Pull-ups"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.bodyweight").isEmpty())
+                .andExpect(jsonPath("$.heaviest").isEmpty()).andExpect(jsonPath("$.bestBodyweight.reps").value(99));
+    }
+
+    @Test void progressRequiresAuthenticationAndValidRangeAndHandlesEmptyHistory() throws Exception {
+        mvc.perform(get("/api/progress").param("through", "2026-09-05")).andExpect(status().isUnauthorized());
+        var session = account();
+        for (String days : new String[]{"0", "366"}) {
+            mvc.perform(get("/api/progress").session(session).param("through", "2026-09-05").param("days", days))
+                    .andExpect(status().isBadRequest());
+        }
+        mvc.perform(get("/api/progress").session(session).param("through", "bad-date")).andExpect(status().isBadRequest());
+        mvc.perform(get("/api/progress").session(session).param("through", "2026-09-05"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.exercises").isEmpty())
+                .andExpect(jsonPath("$.bodyweight").isEmpty()).andExpect(jsonPath("$.heaviest").isEmpty());
+    }
+
     @Test void templatesArePrivateUpsertedAndDoNotLogWorkouts() throws Exception {
         var alice = account();
         var bob = account();

@@ -30,6 +30,25 @@ Authenticated API endpoints (writes require CSRF):
 Flyway V4 creates the template tables and a history lookup index automatically.
 All template operations and previous-session lookups use the signed-in account.
 
+## Progress and personal records
+
+The dashboard's Progress section shows 30, 90 or 365 calendar days ending at the
+selected dashboard date. Bodyweight uses non-null nutrition measurements. Choose
+an exercise for its daily heaviest weighted set and best bodyweight reps per set.
+Dots show actual logged dates, with no invented measurements on missing days.
+Expandable tables provide the exact values for keyboard and screen-reader access.
+
+Records use all history through the selected date, regardless of chart period.
+Heaviest-set records rank weight first, then reps; bodyweight records rank reps.
+Exact ties retain the earliest date. Zero kilograms is weighted, while null weight
+means bodyweight. Exercise names match ignoring case and surrounding spaces;
+use consistent names and weight conventions (for example, per dumbbell) for useful comparisons.
+
+`GET /api/progress?through=2026-09-05&days=90&exercise=Bench%20Press`
+requires authentication and always uses the signed-in account. `days` accepts
+7–365; omitted exercise returns bodyweight history and the exercise choices.
+No database migration or charting dependency is required.
+
 ## Requirements
 
 - Java 21
