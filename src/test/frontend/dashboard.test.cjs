@@ -73,6 +73,51 @@ test('templates fill set counts without copying weights or reps', () => {
     assert.ok(draft[0].sets.every(set => set.weightKg === null && set.reps === null));
 });
 
+test('repeat copies every set independently, preserving bodyweight and zero weight', () => {
+    const h = workoutToolsHarness();
+    h.run('previousWorkout = {date:"2026-09-01",name:"Back",exercises:[{name:"Pull-ups",notes:"Pause",sets:Array.from({length:20},(_,i)=>({weightKg:i===0?null:0,reps:i+1}))}]}');
+    const draft = h.run('repeatWorkoutDraft(previousWorkout)');
+    assert.equal(draft[0].sets.length,20);
+    assert.equal(draft[0].sets[0].weightKg,null);
+    assert.equal(draft[0].sets[1].weightKg,0);
+    assert.equal(draft[0].notes,'Pause');
+    draft[0].sets[0].reps=99;
+    assert.equal(h.run('previousWorkout.exercises[0].sets[0].reps'),1);
+});
+
+test('repeat requires matching earlier history and is disabled for edits, rest or saves', () => {
+    const h = workoutToolsHarness();
+    h.run('workoutForm.elements.workout.value=" back "; workoutForm.elements.date.value="2026-09-05"; previousWorkout={date:"2026-09-01",name:"Back",exercises:[{}]}');
+    assert.equal(h.run('canRepeatWorkout()'),true);
+    for (const flag of ['templateEditingWorkout','templateBusy','workoutWriting','restWorkoutCheckbox.checked']) {
+        h.run(`${flag}=true`);
+        assert.equal(h.run('canRepeatWorkout()'),false);
+        h.run(`${flag}=false`);
+    }
+    h.run('previousWorkout.date="2026-09-05"');
+    assert.equal(h.run('canRepeatWorkout()'),false);
+    h.run('previousWorkout.date="2026-09-01"; workoutForm.elements.workout.value="Chest"');
+    assert.equal(h.run('canRepeatWorkout()'),false);
+    h.run('previousWorkout=null; updateTemplateControls()');
+    assert.equal(h.get('#repeat-last-workout').disabled,true);
+});
+
+test('repeat confirms replacement and changes only the draft without saving', () => {
+    const h = workoutToolsHarness();
+    h.run('workoutForm.elements.workout.value="Back"; workoutForm.elements.date.value="2026-09-05"; workoutForm.elements.notes={value:"Today notes"}; previousWorkout={date:"2026-09-01",name:"Back",exercises:[{name:"Pull-ups",notes:null,sets:[{weightKg:null,reps:10}]}]}');
+    h.run('addExerciseEditor = exercise => exerciseEditors.append(exercise); saveWorkout = () => {throw Error("Must not save")};');
+    h.get('#exercise-editors').append({name:'Existing draft'});
+    h.context.window.confirm=()=>false;
+    h.run('repeatLastWorkout()');
+    assert.equal(h.get('#exercise-editors').children[0].name,'Existing draft');
+    h.context.window.confirm=()=>true;
+    h.run('repeatLastWorkout()');
+    assert.equal(h.get('#exercise-editors').children.length,1);
+    assert.equal(h.get('#exercise-editors').children[0].sets[0].reps,10);
+    assert.equal(h.run('workoutForm.elements.date.value'),'2026-09-05');
+    assert.equal(h.run('workoutForm.elements.notes.value'),'Today notes');
+});
+
 test('rep comparisons require equal weight and distinguish bodyweight from zero', () => {
     const h = workoutToolsHarness();
     assert.match(h.run('previousSetText({weightKg:90,reps:8},"90","10")'), /\+2 reps/);
