@@ -19,6 +19,10 @@ public record UserRegistrationRequest(
         @Size(max = 100)
         String displayName,
 
+        @NotBlank
+        @Size(min = 12, max = 64)
+        String password,
+
         @NotNull
         @PastOrPresent
         LocalDate startDate,

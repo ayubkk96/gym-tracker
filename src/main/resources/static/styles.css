@@ -73,6 +73,27 @@ h2 {
     font-size: 0.8rem;
 }
 
+.header-controls {
+    display: grid;
+    justify-items: end;
+    gap: 14px;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.current-user {
+    max-width: 220px;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .date-row {
     display: flex;
     gap: 8px;
@@ -534,6 +555,63 @@ dialog form {
     color: #4ade80;
 }
 
+.auth-page {
+    display: grid;
+    min-height: 100vh;
+    align-items: center;
+}
+
+.auth-shell {
+    width: min(100% - 32px, 1050px);
+    padding-block: 48px;
+}
+
+.auth-heading {
+    max-width: 620px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.auth-heading p:last-child {
+    margin: 14px 0 0;
+    color: var(--muted);
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.8fr) minmax(420px, 1.2fr);
+    align-items: start;
+    gap: 18px;
+}
+
+.auth-card {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    padding: 24px;
+}
+
+.auth-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.auth-form > button {
+    width: 100%;
+}
+
+#auth-page-status {
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .auth-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 650px) {
     .header {
         align-items: stretch;
@@ -542,6 +620,15 @@ dialog form {
 
     .date-row input {
         flex: 1;
+    }
+
+    .header-controls {
+        width: 100%;
+        justify-items: stretch;
+    }
+
+    .user-menu {
+        justify-content: space-between;
     }
 
     .macro-grid {
@@ -587,6 +674,7 @@ dialog form {
     .dialog-actions button {
         width: 100%;
     }
+
 }
 
 @media (max-width: 430px) {

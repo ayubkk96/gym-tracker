@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sign in · Gym Tracker</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="auth.js" defer></script>
+</head>
+
+<body class="auth-page">
+<main class="auth-shell">
+    <header class="auth-heading">
+        <p class="eyebrow">Your fitness journey</p>
+        <h1>Gym Tracker</h1>
+        <p>Keep your nutrition and training data private and in one place.</p>
+    </header>
+
+    <p id="auth-page-status" class="status" aria-live="polite"></p>
+
+    <div class="auth-grid">
+        <section class="auth-card">
+            <div>
+                <p class="eyebrow">Welcome back</p>
+                <h2>Sign in</h2>
+            </div>
+
+            <form id="login-form" class="auth-form">
+                <label class="field">
+                    <span>Email</span>
+                    <input
+                            name="email"
+                            type="email"
+                            autocomplete="email"
+                            maxlength="255"
+                            required>
+                </label>
+
+                <label class="field">
+                    <span>Password</span>
+                    <input
+                            name="password"
+                            type="password"
+                            autocomplete="current-password"
+                            minlength="12"
+                            maxlength="64"
+                            required>
+                </label>
+
+                <button id="sign-in-button" type="submit">
+                    Sign In
+                </button>
+
+                <p id="login-status" class="status" aria-live="polite"></p>
+            </form>
+        </section>
+
+        <section class="auth-card">
+            <div>
+                <p class="eyebrow">New here?</p>
+                <h2>Create an account</h2>
+            </div>
+
+            <form id="registration-form" class="auth-form">
+                <div class="form-grid">
+                    <label class="field">
+                        <span>Name</span>
+                        <input
+                                name="displayName"
+                                type="text"
+                                autocomplete="name"
+                                maxlength="100"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Email</span>
+                        <input
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                maxlength="255"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Password</span>
+                        <input
+                                name="password"
+                                type="password"
+                                autocomplete="new-password"
+                                minlength="12"
+                                maxlength="64"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Confirm password</span>
+                        <input
+                                name="confirmPassword"
+                                type="password"
+                                autocomplete="new-password"
+                                minlength="12"
+                                maxlength="64"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Start date</span>
+                        <input name="startDate" type="date" required>
+                    </label>
+
+                    <label class="field">
+                        <span>Calories target</span>
+                        <input
+                                name="calories"
+                                type="number"
+                                min="1"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Protein target (g)</span>
+                        <input
+                                name="proteinG"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Carbs target (g)</span>
+                        <input
+                                name="carbsG"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                required>
+                    </label>
+
+                    <label class="field">
+                        <span>Fat target (g)</span>
+                        <input
+                                name="fatG"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                required>
+                    </label>
+                </div>
+
+                <button id="register-button" type="submit">
+                    Create Account
+                </button>
+
+                <p
+                        id="registration-status"
+                        class="status"
+                        aria-live="polite">
+                </p>
+            </form>
+        </section>
+    </div>
+</main>
+</body>
+</html>

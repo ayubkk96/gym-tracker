@@ -2,28 +2,40 @@ package com.ayub.gym_tracker.service;
 
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.repository.AppUserRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CurrentUserService {
 
     private final AppUserRepository appUserRepository;
-    private final String currentUserEmail;
 
-    public CurrentUserService(
-            AppUserRepository appUserRepository,
-            @Value("${tracker.current-user-email}") String currentUserEmail
-    ) {
+    public CurrentUserService(AppUserRepository appUserRepository) {
         this.appUserRepository = appUserRepository;
-        this.currentUserEmail = currentUserEmail;
     }
 
     public AppUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication
+                instanceof AnonymousAuthenticationToken) {
+            throw new IllegalStateException(
+                    "No authenticated user is available."
+            );
+        }
+
+        String email = authentication.getName();
+
         return appUserRepository
-                .findByEmailIgnoreCase(currentUserEmail)
+                .findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new IllegalStateException(
-                        "Current user not found: " + currentUserEmail
+                        "Authenticated user not found: " + email
                 ));
     }
 }

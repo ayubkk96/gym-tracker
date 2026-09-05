@@ -18,14 +18,29 @@
         <h1>Gym Tracker</h1>
     </div>
 
-    <div class="date-control">
-        <label for="dashboard-date">Date</label>
+    <div class="header-controls">
+        <div class="user-menu">
+            <span id="current-user" class="current-user">
+                Signed in
+            </span>
 
-        <div class="date-row">
-            <input id="dashboard-date" type="date">
-            <button id="load-dashboard" type="button">
-                Load
+            <button
+                    id="logout-button"
+                    class="secondary-button compact-button"
+                    type="button">
+                Sign Out
             </button>
+        </div>
+
+        <div class="date-control">
+            <label for="dashboard-date">Date</label>
+
+            <div class="date-row">
+                <input id="dashboard-date" type="date">
+                <button id="load-dashboard" type="button">
+                    Load
+                </button>
+            </div>
         </div>
     </div>
 </header>

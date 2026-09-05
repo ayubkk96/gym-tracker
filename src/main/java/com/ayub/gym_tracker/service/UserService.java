@@ -8,6 +8,8 @@ import com.ayub.gym_tracker.entity.DailyTarget;
 import com.ayub.gym_tracker.exception.EmailAlreadyExistsException;
 import com.ayub.gym_tracker.repository.AppUserRepository;
 import com.ayub.gym_tracker.repository.DailyTargetRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +20,16 @@ public class UserService {
 
     private final AppUserRepository appUserRepository;
     private final DailyTargetRepository dailyTargetRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(
             AppUserRepository appUserRepository,
-            DailyTargetRepository dailyTargetRepository
+            DailyTargetRepository dailyTargetRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.appUserRepository = appUserRepository;
         this.dailyTargetRepository = dailyTargetRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -41,10 +46,17 @@ public class UserService {
 
         AppUser user = new AppUser(
                 email,
-                request.displayName().trim()
+                request.displayName().trim(),
+                passwordEncoder.encode(request.password())
         );
 
-        AppUser savedUser = appUserRepository.save(user);
+        AppUser savedUser;
+
+        try {
+            savedUser = appUserRepository.saveAndFlush(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new EmailAlreadyExistsException(email);
+        }
 
         DailyTargetRequest targets = request.targets();
 
