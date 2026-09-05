@@ -6,6 +6,15 @@ history.
 
 ## Workout templates and comparisons
 
+To repeat a workout, open **Log Workout**, choose its date and enter the workout
+name (or apply a template). Once its latest earlier session loads, choose
+**Repeat last workout**. Confirm replacement of the exercise draft to copy exercise
+names, exercise notes, weights and reps, including bodyweight and all recorded sets.
+The selected date and session-level notes stay unchanged. Review and edit the draft,
+then choose **Save Workout** to record it; copying alone makes no write request.
+Repeat is unavailable without earlier matching history, for rest days, while saving,
+or while editing an already saved session. Existing save/upsert rules still apply.
+
 In **Log Workout**, add exercise names and set counts, then choose **Save as
 template**. Templates store names, notes and 1–20 sets per exercise; saving a
 template does not log a workout. Saving the same template name (ignoring case)

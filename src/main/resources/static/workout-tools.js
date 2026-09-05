@@ -5,6 +5,7 @@ const applyTemplateButton = document.querySelector("#apply-workout-template");
 const deleteTemplateButton = document.querySelector("#delete-workout-template");
 const saveTemplateButton = document.querySelector("#save-workout-template");
 const previousStatus = document.querySelector("#previous-workout-status");
+const repeatWorkoutButton = document.querySelector("#repeat-last-workout");
 let workoutTemplates = [];
 let previousWorkout = null;
 let previousLookupId = 0;
@@ -16,6 +17,7 @@ let workoutWriting = false;
 let templateEditingWorkout = false;
 
 templateSelect.addEventListener("change", updateTemplateControls);
+repeatWorkoutButton.addEventListener("click", repeatLastWorkout);
 applyTemplateButton.addEventListener("click", applyWorkoutTemplate);
 deleteTemplateButton.addEventListener("click", deleteWorkoutTemplate);
 saveTemplateButton.addEventListener("click", saveWorkoutTemplate);
@@ -48,6 +50,32 @@ function updateTemplateControls() {
     applyTemplateButton.disabled = blocked || !selected || templateEditingWorkout;
     deleteTemplateButton.disabled = blocked || !selected || templateEditingWorkout;
     saveTemplateButton.disabled = blocked || restWorkoutCheckbox.checked;
+    repeatWorkoutButton.disabled = !canRepeatWorkout();
+    repeatWorkoutButton.hidden = templateEditingWorkout;
+}
+
+function canRepeatWorkout() {
+    return !templateBusy && !workoutWriting && !templateEditingWorkout && !restWorkoutCheckbox.checked
+        && Boolean(previousWorkout?.exercises.length)
+        && normalizeExerciseName(previousWorkout.name) === normalizeExerciseName(workoutForm.elements.workout.value)
+        && previousWorkout.date < workoutForm.elements.date.value;
+}
+
+function repeatWorkoutDraft(workout) {
+    return workout.exercises.map(exercise => ({
+        name: exercise.name, notes: exercise.notes,
+        sets: exercise.sets.map(set => ({weightKg: set.weightKg, reps: set.reps}))
+    }));
+}
+
+function repeatLastWorkout() {
+    if (!canRepeatWorkout()) return;
+    if (!window.confirm(`Copy exercises from ${previousWorkout.date}? This replaces the current exercise draft, including unsaved weights, reps and exercise notes. Review before saving.`)) return;
+    const draft = repeatWorkoutDraft(previousWorkout);
+    exerciseEditors.replaceChildren();
+    for (const exercise of draft) addExerciseEditor(exercise);
+    clearWorkoutFormStatus();
+    workoutFormStatus.textContent = "Previous exercises copied. Your selected date and session notes are unchanged. Review the weights and reps, then select Save Workout.";
 }
 
 function setWorkoutToolsSaving(saving) {
@@ -182,6 +210,7 @@ function schedulePreviousWorkout() {
     previousLookupId++;
     previousWorkout = null;
     renderPreviousSets();
+    updateTemplateControls();
     const name = workoutForm.elements.workout.value.trim();
     const before = workoutForm.elements.date.value;
     if (restWorkoutCheckbox.checked || !name || !before) {
@@ -206,6 +235,7 @@ async function loadPreviousWorkout(name, before, lookupId) {
         const previous = await response.json();
         if (lookupId !== previousLookupId || !workoutDialog.open) return;
         previousWorkout = previous;
+        updateTemplateControls();
         previousStatus.textContent = `Comparing with ${formatHistoryDate(previous.date)} · ${previous.name}. Rep changes are shown only at the same weight.`;
         renderPreviousSets();
     } catch (error) {
