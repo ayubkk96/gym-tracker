@@ -58,6 +58,29 @@ requires authentication and always uses the signed-in account. `days` accepts
 7–365; omitted exercise returns bodyweight history and the exercise choices.
 No database migration or charting dependency is required.
 
+## Account export and deletion
+
+Open **Account** in the dashboard to download a JSON export or delete your account.
+The export is a versioned archive (`schemaVersion: 1`), not a bulk-import request:
+`account`, `targets`, `nutrition`, `workouts`, `exercises`, `sets`, `templates` and
+`templateExercises` contain explicit database field names and IDs for relationships.
+It includes all dates, nullable bodyweight sets and historical targets, but excludes
+password hashes, reset tokens and rate-limit data. Keep downloads private.
+
+`GET /api/account/export` requires a signed-in session, sends an attachment with
+`Cache-Control: no-store`, and reads a consistent database snapshot.
+`DELETE /api/account` requires CSRF and JSON
+`{"password":"current password","confirmation":"DELETE"}`. The password is checked
+against the current stored hash under a row lock. Five attempts per account per
+15-minute window are allowed. Successful deletion commits all cascading deletes
+before invalidating the current session; other sessions lose access on their next request.
+
+Deletion removes the account, targets, logs, sets, templates and reset tokens from
+the active database. It does not erase downloaded exports, hosting logs or existing
+backups. Operators must configure backup/log retention and avoid restoring deleted
+accounts when recovering backups. Hashed abuse-prevention counters expire normally.
+No live account is deleted by deploying this feature.
+
 ## Requirements
 
 - Java 21

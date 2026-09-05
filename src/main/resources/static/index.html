@@ -11,6 +11,7 @@
     <script src="app.js" defer></script>
     <script src="workout-tools.js" defer></script>
     <script src="progress.js" defer></script>
+    <script src="account.js" defer></script>
 </head>
 
 <body>
@@ -24,6 +25,7 @@
     </nav>
     <div class="user-menu">
         <span id="current-user" class="current-user">Signed in</span>
+        <button id="open-account" class="secondary-button compact-button" type="button">Account</button>
         <button id="logout-button" class="secondary-button compact-button" type="button">Sign Out</button>
     </div>
 </div>
@@ -196,6 +198,22 @@
         <p class="section-caption">Select an entry to revisit that date.</p>
     </section>
     </div>
+
+    <dialog id="account-dialog" aria-labelledby="account-title">
+        <h2 id="account-title">Your account and data</h2>
+        <p>Download your profile, targets, nutrition, workouts and templates as JSON.</p>
+        <button id="export-account" class="secondary-button" type="button">Download my data</button>
+        <p id="account-status" class="status" role="status"></p>
+        <form id="delete-account-form">
+            <h3>Delete account permanently</h3>
+            <p>This removes your account, targets, nutrition, workouts, sets and templates from the active database. Download your data first if you want a copy. Deletion cannot be undone in the app.</p>
+            <p class="section-caption">Previously downloaded copies remain on your devices. Hosting backups expire according to the configured retention policy.</p>
+            <label class="field">Current password<input name="password" type="password" autocomplete="current-password" maxlength="128" required></label>
+            <label class="field">Type DELETE to confirm<input name="confirmation" autocomplete="off" pattern="DELETE" required></label>
+            <button id="delete-account-button" class="secondary-button" type="submit">Permanently delete my account</button>
+        </form>
+        <button id="close-account" class="secondary-button" type="button">Close</button>
+    </dialog>
 
     <dialog id="nutrition-dialog" aria-labelledby="nutrition-form-title">
         <form id="nutrition-form">
