@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.util.Locale;
 
 public class AuthRateLimitFilter extends OncePerRequestFilter {
+    private static final int REGISTRATION_CLIENT_LIMIT = 10;
+    private static final int REGISTRATION_GLOBAL_LIMIT = 200;
+    private static final int REGISTRATION_WINDOW_SECONDS = 3600;
+
     private final AuthRateLimiter limiter;
     public AuthRateLimitFilter(AuthRateLimiter limiter) { this.limiter = limiter; }
 
@@ -19,18 +23,21 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
         if ("POST".equals(request.getMethod())) {
             String path = request.getServletPath();
             if (path.isEmpty()) path = request.getRequestURI().substring(request.getContextPath().length());
-            // No client-supplied forwarding header is trusted for these budgets.
             int limit = switch (path) {
                 case "/api/auth/login" -> 100;
-                case "/api/users" -> 10;
+                case "/api/users" -> REGISTRATION_GLOBAL_LIMIT;
                 case "/api/auth/password-reset/request" -> 30;
                 case "/api/auth/password-reset/confirm" -> 60;
                 default -> 0;
             };
             if (limit != 0) {
-                int window = path.equals("/api/users") ? 3600 : 900;
+                int window = path.equals("/api/users") ? REGISTRATION_WINDOW_SECONDS : 900;
                 try {
                     boolean allowed = limiter.allow("global:" + path, limit, window);
+                    if (allowed && path.equals("/api/users")) {
+                        allowed = limiter.allow("registration:" + clientAddress(request),
+                                REGISTRATION_CLIENT_LIMIT, window);
+                    }
                     if (allowed && path.equals("/api/auth/login")) {
                         String username = request.getParameter("username");
                         allowed = limiter.allow("login:" + (username == null ? "" :
@@ -52,5 +59,16 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private String clientAddress(HttpServletRequest request) {
+        // Render sets X-Forwarded-For for proxied requests. Use the left-most address,
+        // which represents the original client, and fall back for local/test traffic.
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            String first = forwardedFor.split(",", 2)[0].trim();
+            if (!first.isEmpty()) return first;
+        }
+        return request.getRemoteAddr();
     }
 }
