@@ -146,7 +146,7 @@ async function loadDashboard() {
         requireAuthenticated(response);
 
         if (!response.ok) {
-            throw new Error(
+            throw requestError(response,
                 `Dashboard request failed: ${response.status}`
             );
         }
@@ -162,7 +162,7 @@ async function loadDashboard() {
     } catch (error) {
         if (requestId !== dashboardRequestId) return;
         console.error(error);
-        showError(`Could not load ${date}. ${currentDashboard ? "The previous snapshot is still shown. " : ""}Select View to retry.`);
+        showError(`Could not load ${date}. ${currentDashboard ? "The previous snapshot is still shown. " : ""}Select View to retry.${requestReference(error)}`);
     } finally {
         if (requestId === dashboardRequestId) setLoading(false);
     }
@@ -652,7 +652,7 @@ async function saveNutrition(event) {
         requireAuthenticated(response, true);
 
         if (!response.ok) {
-            throw new Error(
+            throw requestError(response,
                 `Nutrition request failed: ${response.status}`
             );
         }
@@ -674,7 +674,7 @@ async function saveNutrition(event) {
         console.error(error);
 
         nutritionFormStatus.textContent =
-            "Could not save nutrition.";
+            "Could not save nutrition." + requestReference(error);
 
         nutritionFormStatus.classList.add("error");
     } finally {
@@ -932,7 +932,7 @@ async function saveWorkout(event) {
         requireAuthenticated(response, true);
 
         if (!response.ok) {
-            throw new Error(
+            throw requestError(response,
                 `Workout request failed: ${response.status}`
             );
         }
@@ -950,7 +950,7 @@ async function saveWorkout(event) {
         );
     } catch (error) {
         console.error(error);
-        showWorkoutFormError("Could not save workout.");
+        showWorkoutFormError("Could not save workout." + requestReference(error));
     } finally {
         setWorkoutSaving(false);
     }
@@ -1005,6 +1005,17 @@ function showError(message) {
     statusMessage.textContent = message;
     statusMessage.classList.remove("success");
     statusMessage.classList.add("error");
+}
+
+function requestError(response, message) {
+    const error = new Error(message);
+    const reference = response.headers?.get("X-Request-ID");
+    if (/^[a-f0-9-]{36}$/i.test(reference || "")) error.requestId = reference;
+    return error;
+}
+
+function requestReference(error) {
+    return error.requestId ? ` Reference: ${error.requestId}` : "";
 }
 
 async function logout() {

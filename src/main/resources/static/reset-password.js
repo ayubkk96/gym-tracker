@@ -55,7 +55,10 @@ async function submitRecovery(event, confirming) {
         const message = response.status === 429 ? "Too many attempts. Please try again later."
             : response.status === 403 ? "Your session expired. Refresh the page or request a new link."
             : data.message || "The request could not be completed. Please try again.";
-        showRecoveryStatus(message, !response.ok);
+        const reference = response.headers.get("X-Request-ID");
+        const suffix = response.status >= 500 && /^[a-f0-9-]{36}$/i.test(reference || "")
+            ? ` Reference: ${reference}` : "";
+        showRecoveryStatus(message + suffix, !response.ok);
         if (response.ok && confirming) {
             resetToken = null;
             form.reset();

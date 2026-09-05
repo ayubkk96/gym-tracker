@@ -134,3 +134,12 @@ test('account switch exposes exactly one form and updates accessible button stat
     assert.equal(h.get('#sign-in-panel').hidden, false);
     assert.equal(h.get('#registration-panel').hidden, true);
 });
+
+test('API failures expose only well-formed support references', () => {
+    const h = harness();
+    h.context.response = { headers: { get: () => '12345678-abcd-1234-abcd-123456789abc' } };
+    assert.equal(h.run('requestReference(requestError(response, "Failed"))'),
+        ' Reference: 12345678-abcd-1234-abcd-123456789abc');
+    h.context.response = { headers: { get: () => 'untrusted-private-data' } };
+    assert.equal(h.run('requestReference(requestError(response, "Failed"))'), '');
+});
