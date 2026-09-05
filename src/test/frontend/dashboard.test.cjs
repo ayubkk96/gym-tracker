@@ -41,7 +41,7 @@ function harness(script = 'app.js') {
 }
 
 test('both pages have unique IDs and every literal JS ID selector exists', () => {
-    for (const [page, script] of [['index.html', 'app.js'], ['login.html', 'auth.js']]) {
+    for (const [page, script] of [['index.html', 'app.js'], ['login.html', 'auth.js'], ['reset-password.html', 'reset-password.js']]) {
         const html = fs.readFileSync(path.join(root, page), 'utf8');
         const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
         assert.equal(ids.length, new Set(ids).size, `${page} duplicate ID`);
@@ -133,4 +133,13 @@ test('account switch exposes exactly one form and updates accessible button stat
     h.run('showAuthPanel(false)');
     assert.equal(h.get('#sign-in-panel').hidden, false);
     assert.equal(h.get('#registration-panel').hidden, true);
+});
+
+test('API failures expose only well-formed support references', () => {
+    const h = harness();
+    h.context.response = { headers: { get: () => '12345678-abcd-1234-abcd-123456789abc' } };
+    assert.equal(h.run('requestReference(requestError(response, "Failed"))'),
+        ' Reference: 12345678-abcd-1234-abcd-123456789abc');
+    h.context.response = { headers: { get: () => 'untrusted-private-data' } };
+    assert.equal(h.run('requestReference(requestError(response, "Failed"))'), '');
 });

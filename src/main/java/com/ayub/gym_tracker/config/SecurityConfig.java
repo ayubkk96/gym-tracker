@@ -2,6 +2,7 @@ package com.ayub.gym_tracker.config;
 
 import com.ayub.gym_tracker.entity.AppUser;
 import com.ayub.gym_tracker.repository.AppUserRepository;
+import com.ayub.gym_tracker.security.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -37,24 +40,25 @@ public class SecurityConfig {
                             )
                     );
 
-            return User.withUsername(user.getEmail())
-                    .password(user.getPasswordHash())
-                    .roles("USER")
-                    .build();
+            return new TrackerPrincipal(user);
         };
     }
 
     @Bean
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(
-            HttpSecurity http
+            HttpSecurity http, AuthRateLimiter limiter, AppUserRepository users
     ) throws Exception {
         http
                 .securityMatcher("/api/**")
+                .addFilterBefore(new AuthRateLimitFilter(limiter), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new PasswordSessionFilter(users), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/api/health",
                                 "/api/auth/session",
+                                "/api/auth/password-reset/request",
+                                "/api/auth/password-reset/confirm",
                                 "/api/users"
                         )
                         .permitAll()
@@ -121,13 +125,16 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain pageSecurityFilterChain(
-            HttpSecurity http
+            HttpSecurity http, AppUserRepository users
     ) throws Exception {
         http
+                .addFilterAfter(new PasswordSessionFilter(users), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/login.html",
                                 "/auth.js",
+                                "/reset-password.html",
+                                "/reset-password.js",
                                 "/styles.css",
                                 "/favicon.ico",
                                 "/error"

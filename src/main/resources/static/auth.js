@@ -81,6 +81,14 @@ async function signIn(event) {
     try {
         const response = await submitLogin(email, password);
 
+        if (response.status === 429) {
+            showStatus(loginStatus, "Too many sign-in attempts. Please wait 15 minutes and try again.", "error");
+            return;
+        }
+        if (response.status >= 500) {
+            showStatus(loginStatus, "Sign-in is temporarily unavailable. Please try again later.", "error");
+            return;
+        }
         if (!response.ok) {
             throw new Error("Invalid email or password.");
         }
@@ -205,6 +213,9 @@ function mutationHeaders() {
 }
 
 async function registrationError(response) {
+    if (response.status === 429) {
+        return "Registration is temporarily rate limited. Please try again in an hour.";
+    }
     if (response.status === 409) {
         return "An account already exists for that email.";
     }

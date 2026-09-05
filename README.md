@@ -93,6 +93,9 @@ docker build -t gym-tracker .
 
 ## Production checklist
 
+See [the beta launch guide](docs/beta-launch.md) for password-recovery email
+setup, rate-limit behavior, log-based monitoring and remaining manual checks.
+
 ### Deploy on Render
 
 Follow [the Render deployment guide](docs/render-deployment.md). The included
