@@ -9,6 +9,8 @@ public record DashboardResponse(
         Integer day,
         DailyTargetsResponse targets,
         NutritionResponse nutrition,
-        List<WorkoutResponse> workouts
+        List<WorkoutResponse> workouts,
+        WeeklySummaryResponse weeklySummary,
+        List<RecentHistoryResponse> recentHistory
 ) {
 }

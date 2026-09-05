@@ -132,7 +132,14 @@ section {
     gap: 12px;
 }
 
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
 .macro-card,
+.summary-card,
 .workout-card {
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -152,6 +159,22 @@ section {
     display: block;
     margin-block: 7px 14px;
     font-size: 1.15rem;
+}
+
+.summary-card {
+    padding: 16px 18px;
+}
+
+.summary-card span,
+.history-meta {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.summary-card strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 1.25rem;
 }
 
 progress {
@@ -182,6 +205,51 @@ progress::-moz-progress-bar {
 
 .workout-card {
     overflow: hidden;
+}
+
+.history-list {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+}
+
+.history-row {
+    display: grid;
+    grid-template-columns: 130px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 15px 18px;
+    text-align: left;
+}
+
+.history-row:last-child {
+    border-bottom: 0;
+}
+
+.history-row:hover {
+    background: var(--surface-light);
+}
+
+.history-date {
+    font-size: 0.9rem;
+}
+
+.history-details {
+    display: grid;
+    gap: 4px;
+}
+
+.history-arrow {
+    color: var(--gold-light);
+    font-size: 1.5rem;
 }
 
 .workout-title-row {
@@ -480,6 +548,10 @@ dialog form {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .weekly-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .section-actions {
         display: flex;
         align-items: center;
@@ -514,5 +586,19 @@ dialog form {
 
     .dialog-actions button {
         width: 100%;
+    }
+}
+
+@media (max-width: 430px) {
+    .weekly-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-row {
+        grid-template-columns: 1fr auto;
+    }
+
+    .history-date {
+        grid-column: 1 / -1;
     }
 }

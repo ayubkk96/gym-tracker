@@ -2,6 +2,8 @@ const dateInput = document.querySelector("#dashboard-date");
 const loadButton = document.querySelector("#load-dashboard");
 const statusMessage = document.querySelector("#status-message");
 const workoutContainer = document.querySelector("#workout-container");
+const recentHistoryContainer =
+    document.querySelector("#recent-history-container");
 const nutritionDialog =
     document.querySelector("#nutrition-dialog");
 
@@ -124,6 +126,8 @@ function renderDashboard(dashboard) {
     );
 
     renderWorkouts(dashboard.workouts);
+    renderWeeklySummary(dashboard.weeklySummary);
+    renderRecentHistory(dashboard.recentHistory);
 }
 
 function renderNutrition(nutrition, targets) {
@@ -182,6 +186,149 @@ function updateMacro(name, current, target, unit) {
 
     progress.max = target;
     progress.value = current;
+}
+
+function renderWeeklySummary(summary) {
+    if (!summary) {
+        setText("average-calories", "—");
+        setText("average-protein", "—");
+        setText("average-carbs", "—");
+        setText("average-fat", "—");
+        setText("training-sessions", "—");
+        setText("nutrition-days-logged", "—");
+        setText("weekly-period", "—");
+        return;
+    }
+
+    setText(
+        "average-calories",
+        formatAverage(summary.averageCalories, " kcal")
+    );
+    setText(
+        "average-protein",
+        formatAverage(summary.averageProteinG, "g")
+    );
+    setText(
+        "average-carbs",
+        formatAverage(summary.averageCarbsG, "g")
+    );
+    setText(
+        "average-fat",
+        formatAverage(summary.averageFatG, "g")
+    );
+    setText(
+        "training-sessions",
+        String(summary.trainingSessions)
+    );
+    setText(
+        "nutrition-days-logged",
+        `${summary.nutritionDaysLogged} of 7`
+    );
+    setText(
+        "weekly-period",
+        `${formatShortDate(summary.fromDate)} – `
+            + formatShortDate(summary.toDate)
+    );
+}
+
+function renderRecentHistory(history) {
+    recentHistoryContainer.replaceChildren();
+
+    if (!history || history.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "empty-state";
+        emptyState.textContent =
+            "No entries recorded in the last seven days.";
+
+        recentHistoryContainer.append(emptyState);
+        return;
+    }
+
+    const historyList = document.createElement("div");
+    historyList.className = "history-list";
+
+    for (const entry of history) {
+        historyList.append(createHistoryRow(entry));
+    }
+
+    recentHistoryContainer.append(historyList);
+}
+
+function createHistoryRow(entry) {
+    const row = document.createElement("button");
+    row.className = "history-row";
+    row.type = "button";
+
+    row.addEventListener("click", async () => {
+        dateInput.value = entry.date;
+        await loadDashboard();
+    });
+
+    const date = document.createElement("strong");
+    date.className = "history-date";
+    date.textContent = formatHistoryDate(entry.date);
+
+    const details = document.createElement("div");
+    details.className = "history-details";
+
+    const workout = document.createElement("strong");
+    workout.textContent = entry.workouts.length > 0
+        ? entry.workouts.join(" + ")
+        : "No workout";
+
+    const nutrition = document.createElement("span");
+    nutrition.className = "history-meta";
+
+    const nutritionParts = [];
+
+    if (entry.calories != null) {
+        nutritionParts.push(`${entry.calories} kcal`);
+    }
+
+    if (entry.proteinG != null) {
+        nutritionParts.push(`${entry.proteinG}g protein`);
+    }
+
+    if (entry.weightKg != null) {
+        nutritionParts.push(`${entry.weightKg}kg`);
+    }
+
+    nutrition.textContent = nutritionParts.length > 0
+        ? nutritionParts.join(" · ")
+        : "Nutrition not recorded";
+
+    details.append(workout, nutrition);
+
+    const arrow = document.createElement("span");
+    arrow.className = "history-arrow";
+    arrow.textContent = "›";
+    arrow.setAttribute("aria-hidden", "true");
+
+    row.append(date, details, arrow);
+    return row;
+}
+
+function setText(id, value) {
+    document.querySelector(`#${id}`).textContent = value;
+}
+
+function formatAverage(value, unit) {
+    return value == null ? "—" : `${value}${unit}`;
+}
+
+function formatShortDate(value) {
+    return new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "short"
+    }).format(new Date(`${value}T00:00:00`));
+}
+
+function formatHistoryDate(value) {
+    return new Intl.DateTimeFormat("en-GB", {
+        weekday: "short",
+        day: "numeric",
+        month: "short"
+    }).format(new Date(`${value}T00:00:00`));
 }
 
 function renderWorkouts(workouts) {
