@@ -20,6 +20,15 @@ setFormsDisabled(true);
 
 loginForm.addEventListener("submit", signIn);
 registrationForm.addEventListener("submit", register);
+document.querySelector("#show-sign-in").addEventListener("click", () => showAuthPanel(false));
+document.querySelector("#show-registration").addEventListener("click", () => showAuthPanel(true));
+
+function showAuthPanel(registering) {
+    document.querySelector("#sign-in-panel").hidden = registering;
+    document.querySelector("#registration-panel").hidden = !registering;
+    document.querySelector("#show-sign-in").setAttribute("aria-pressed", String(!registering));
+    document.querySelector("#show-registration").setAttribute("aria-pressed", String(registering));
+}
 
 initialiseAuthentication();
 
