@@ -67,10 +67,16 @@ async function loadDashboard() {
 
 function renderDashboard(dashboard) {
     currentDashboard = dashboard;
+
     document.querySelector("#day-title").textContent =
-        dashboard.day
-            ? `Day ${dashboard.day}`
-            : "Dashboard";
+        new Intl.DateTimeFormat("en-GB", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }).format(
+            new Date(`${dashboard.date}T00:00:00`)
+        );
 
     renderNutrition(
         dashboard.nutrition,
