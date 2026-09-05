@@ -12,47 +12,51 @@
 </head>
 
 <body>
+<a class="skip-link" href="#dashboard-content">Skip to dashboard</a>
+<div class="topbar">
+    <a class="brand" href="/" aria-label="Gym Tracker home"><span class="brand-mark" aria-hidden="true">GT</span> Gym Tracker<span class="brand-dot" aria-hidden="true">.</span></a>
+    <nav class="main-nav" aria-label="Dashboard sections">
+        <a href="#nutrition">Overview</a>
+        <a href="#training">Training</a>
+        <a href="#history">History</a>
+    </nav>
+    <div class="user-menu">
+        <span id="current-user" class="current-user">Signed in</span>
+        <button id="logout-button" class="secondary-button compact-button" type="button">Sign Out</button>
+    </div>
+</div>
 <header class="header">
     <div>
-        <p class="eyebrow">Your fitness journey</p>
-        <h1>Gym Tracker</h1>
+        <p class="eyebrow">Make every session count</p>
+        <h1>Your overview<span class="accent">.</span></h1>
+        <p class="page-description">Your training and nutrition, all in one place.</p>
     </div>
 
     <div class="header-controls">
-        <div class="user-menu">
-            <span id="current-user" class="current-user">
-                Signed in
-            </span>
-
-            <button
-                    id="logout-button"
-                    class="secondary-button compact-button"
-                    type="button">
-                Sign Out
-            </button>
-        </div>
-
         <div class="date-control">
-            <label for="dashboard-date">Date</label>
+            <label for="dashboard-date">Viewing date</label>
 
             <div class="date-row">
-                <input id="dashboard-date" type="date">
+                <button id="previous-date" class="icon-button" type="button" aria-label="Previous date">‹</button>
+                <input id="dashboard-date" type="date" required>
+                <button id="next-date" class="icon-button" type="button" aria-label="Next date">›</button>
                 <button id="load-dashboard" type="button">
-                    Load
+                    View
                 </button>
             </div>
+            <button id="today-date" class="text-button" type="button">Back to today</button>
         </div>
     </div>
 </header>
 
-<main>
-    <p id="status-message" class="status"></p>
+<main id="dashboard-content" tabindex="-1">
+    <p id="status-message" class="status" role="status" aria-live="polite"></p>
 
-    <section>
+    <section id="nutrition" aria-labelledby="day-title">
         <div class="section-heading">
             <div>
-                <p class="eyebrow">Daily performance</p>
-                <h2 id="day-title">Dashboard</h2>
+                <p class="eyebrow">Nutrition snapshot</p>
+                <h2 id="day-title" tabindex="-1">Your daily intake</h2>
             </div>
 
             <div class="section-actions">
@@ -63,45 +67,49 @@
                         id="open-nutrition-form"
                         class="secondary-button"
                         type="button">
-                    Log Nutrition
+                    + Log nutrition
                 </button>
             </div>
         </div>
 
         <div class="macro-grid">
-            <article class="macro-card">
+            <article class="macro-card calories-card">
                 <span>Calories</span>
                 <strong id="calories-value">—</strong>
-                <progress id="calories-progress"></progress>
+                <span id="calories-target" class="macro-target">Daily target —</span>
+                <progress id="calories-progress" aria-label="Calories toward daily target" value="0" max="1"></progress>
             </article>
 
             <article class="macro-card">
                 <span>Protein</span>
                 <strong id="protein-value">—</strong>
-                <progress id="protein-progress"></progress>
+                <span id="protein-target" class="macro-target">Daily target —</span>
+                <progress id="protein-progress" aria-label="Protein toward daily target" value="0" max="1"></progress>
             </article>
 
             <article class="macro-card">
                 <span>Carbs</span>
                 <strong id="carbs-value">—</strong>
-                <progress id="carbs-progress"></progress>
+                <span id="carbs-target" class="macro-target">Daily target —</span>
+                <progress id="carbs-progress" aria-label="Carbs toward daily target" value="0" max="1"></progress>
             </article>
 
             <article class="macro-card">
                 <span>Fat</span>
                 <strong id="fat-value">—</strong>
-                <progress id="fat-progress"></progress>
+                <span id="fat-target" class="macro-target">Daily target —</span>
+                <progress id="fat-progress" aria-label="Fat toward daily target" value="0" max="1"></progress>
             </article>
         </div>
 
         <p id="nutrition-notes" class="notes"></p>
     </section>
 
-    <section>
+    <section class="weekly-section" aria-labelledby="weekly-title">
         <div class="section-heading">
             <div>
                 <p class="eyebrow">Last seven calendar days</p>
-                <h2>Weekly averages</h2>
+                <h2 id="weekly-title">Your week at a glance</h2>
             </div>
 
             <span id="weekly-period" class="history-meta">—</span>
@@ -138,43 +146,47 @@
                 <strong id="nutrition-days-logged">—</strong>
             </article>
         </div>
+        <p class="section-caption">Nutrition averages include recorded dates only.</p>
     </section>
 
-    <section>
+    <div class="dashboard-columns">
+    <section id="training" aria-labelledby="training-title">
         <div class="section-heading">
             <div>
                 <p class="eyebrow">Training log</p>
-                <h2>Workout</h2>
+                <h2 id="training-title">Training log</h2>
             </div>
 
             <button
                     id="open-workout-form"
-                    class="secondary-button"
+                    class="primary-button"
                     type="button">
-                Log Workout
+                + Log workout
             </button>
         </div>
 
         <div id="workout-container"></div>
     </section>
 
-    <section>
+    <section id="history" aria-labelledby="history-title">
         <div class="section-heading">
             <div>
                 <p class="eyebrow">Last seven calendar days</p>
-                <h2>Recent history</h2>
+                <h2 id="history-title">Recent history</h2>
             </div>
         </div>
 
         <div id="recent-history-container"></div>
+        <p class="section-caption">Select an entry to revisit that date.</p>
     </section>
+    </div>
 
-    <dialog id="nutrition-dialog">
+    <dialog id="nutrition-dialog" aria-labelledby="nutrition-form-title">
         <form id="nutrition-form">
             <div class="dialog-heading">
                 <div>
                     <p class="eyebrow">Daily intake</p>
-                    <h2>Log Nutrition</h2>
+                    <h2 id="nutrition-form-title">Log nutrition</h2>
                 </div>
 
                 <button
@@ -272,7 +284,7 @@
         </form>
     </dialog>
 
-    <dialog id="workout-dialog" class="workout-form-dialog">
+    <dialog id="workout-dialog" class="workout-form-dialog" aria-labelledby="workout-form-title">
         <form id="workout-form">
             <div class="dialog-heading">
                 <div>
@@ -331,6 +343,7 @@
                 </div>
 
                 <div id="exercise-editors"></div>
+                <p class="section-caption">For bodyweight sets, leave weight blank. Add as many sets as you need, up to 20 per exercise.</p>
             </div>
 
             <p

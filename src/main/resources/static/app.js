@@ -72,13 +72,30 @@ let currentDashboard = null;
 let editingWorkoutName = null;
 let csrfToken = null;
 let csrfHeaderName = "X-CSRF-TOKEN";
+let dashboardRequestId = 0;
 
 dateInput.value = getLocalDate();
 
 loadButton.addEventListener("click", loadDashboard);
+dateInput.addEventListener("change", loadDashboard);
+document.querySelector("#previous-date").addEventListener("click", () => moveDate(-1));
+document.querySelector("#next-date").addEventListener("click", () => moveDate(1));
+document.querySelector("#today-date").addEventListener("click", () => {
+    dateInput.value = getLocalDate();
+    loadDashboard();
+});
 logoutButton.addEventListener("click", logout);
 
+openNutritionButton.disabled = true;
+openWorkoutButton.disabled = true;
 initialiseDashboard();
+
+function moveDate(offset) {
+    const date = new Date(`${dateInput.value || getLocalDate()}T12:00:00`);
+    date.setDate(date.getDate() + offset);
+    dateInput.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    loadDashboard();
+}
 
 async function initialiseDashboard() {
     try {
@@ -110,9 +127,11 @@ async function initialiseDashboard() {
 }
 
 async function loadDashboard() {
+    const requestId = ++dashboardRequestId;
     const date = dateInput.value;
 
     if (!date) {
+        setLoading(false);
         showError("Please choose a date.");
         return;
     }
@@ -134,14 +153,18 @@ async function loadDashboard() {
 
         const dashboard = await response.json();
 
+        // A slower, earlier response must not replace the selected date.
+        if (requestId !== dashboardRequestId) return;
+
         renderDashboard(dashboard);
         statusMessage.textContent = "";
         statusMessage.classList.remove("error", "success");
     } catch (error) {
+        if (requestId !== dashboardRequestId) return;
         console.error(error);
-        showError("Could not load your dashboard.");
+        showError(`Could not load ${date}. ${currentDashboard ? "The previous snapshot is still shown. " : ""}Select View to retry.`);
     } finally {
-        setLoading(false);
+        if (requestId === dashboardRequestId) setLoading(false);
     }
 }
 
@@ -170,10 +193,10 @@ function renderDashboard(dashboard) {
 
 function renderNutrition(nutrition, targets) {
     const values = nutrition ?? {
-        calories: 0,
-        proteinG: 0,
-        carbsG: 0,
-        fatG: 0,
+        calories: null,
+        proteinG: null,
+        carbsG: null,
+        fatG: null,
         weightKg: null,
         notes: null
     };
@@ -212,18 +235,21 @@ function renderNutrition(nutrition, targets) {
             : `Weight: ${values.weightKg}kg`;
 
     document.querySelector("#nutrition-notes").textContent =
-        values.notes ?? "";
+        nutrition ? (values.notes ?? "") : "No nutrition logged for this date yet. Add your intake when you're ready.";
+    openNutritionButton.textContent = nutrition ? "Edit nutrition" : "+ Log nutrition";
 }
 
 function updateMacro(name, current, target, unit) {
     document.querySelector(`#${name}-value`).textContent =
-        `${current}${unit} / ${target}${unit}`;
+        current == null ? "—" : `${new Intl.NumberFormat("en-GB").format(current)}${unit}`;
+    setText(`${name}-target`, `Daily target ${new Intl.NumberFormat("en-GB").format(target)}${unit || " kcal"}`);
 
     const progress =
         document.querySelector(`#${name}-progress`);
 
-    progress.max = target;
-    progress.value = current;
+    progress.max = target > 0 ? target : 1;
+    progress.value = current ?? 0;
+    progress.setAttribute("aria-valuetext", current == null ? "Not logged" : `${current}${unit} of ${target}${unit}`);
 }
 
 function renderWeeklySummary(summary) {
@@ -296,10 +322,14 @@ function createHistoryRow(entry) {
     const row = document.createElement("button");
     row.className = "history-row";
     row.type = "button";
+    if (entry.date === currentDashboard?.date) row.setAttribute("aria-current", "date");
 
     row.addEventListener("click", async () => {
         dateInput.value = entry.date;
         await loadDashboard();
+        if (currentDashboard?.date === entry.date) {
+            document.querySelector("#day-title").focus();
+        }
     });
 
     const date = document.createElement("strong");
@@ -376,8 +406,17 @@ function renderWorkouts(workouts) {
         const emptyState = document.createElement("div");
 
         emptyState.className = "empty-state";
-        emptyState.textContent =
-            "No workout recorded for this date.";
+        const title = document.createElement("strong");
+        title.textContent = "A fresh page for your training";
+        const hint = document.createElement("span");
+        hint.textContent = "Log a session or record a rest day for this date.";
+        const action = document.createElement("button");
+        action.type = "button";
+        action.className = "secondary-button";
+        action.dataset.dashboardAction = "true";
+        action.textContent = "+ Log workout";
+        action.addEventListener("click", () => openWorkoutForm());
+        emptyState.append(title, hint, action);
 
         workoutContainer.append(emptyState);
         return;
@@ -403,6 +442,8 @@ function createWorkoutCard(workout) {
     editButton.className = "secondary-button compact-button";
     editButton.type = "button";
     editButton.textContent = "Edit";
+    editButton.dataset.dashboardAction = "true";
+    editButton.setAttribute("aria-label", `Edit ${workout.name}`);
     editButton.addEventListener(
         "click",
         () => openWorkoutForm(workout)
@@ -465,8 +506,12 @@ function createExercise(exercise) {
             ? "BW"
             : `${set.weightKg}kg`;
 
-        setElement.textContent =
-            `Set ${index + 1}: ${weight} × ${set.reps}`;
+        const label = document.createElement("span");
+        label.className = "set-label";
+        label.textContent = `Set ${index + 1}`;
+        const value = document.createElement("span");
+        value.textContent = `${weight} × ${set.reps}`;
+        setElement.append(label, value);
 
         setList.append(setElement);
     });
@@ -486,11 +531,18 @@ function createExercise(exercise) {
 
 function setLoading(loading) {
     loadButton.disabled = loading;
-    loadButton.textContent = loading ? "Loading…" : "Load";
+    loadButton.textContent = loading ? "Wait…" : "View";
+    document.querySelector("#dashboard-content").setAttribute("aria-busy", String(loading));
+    const unavailable = loading || !currentDashboard || currentDashboard.date !== dateInput.value;
+    openNutritionButton.disabled = unavailable;
+    openWorkoutButton.disabled = unavailable;
+    document.querySelectorAll("[data-dashboard-action]").forEach(button => {
+        button.disabled = unavailable;
+    });
 
     if (loading) {
         statusMessage.textContent = "Loading dashboard…";
-        statusMessage.classList.remove("error");
+        statusMessage.classList.remove("error", "success");
     }
 }
 

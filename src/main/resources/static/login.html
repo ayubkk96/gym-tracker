@@ -14,18 +14,25 @@
 <body class="auth-page">
 <main class="auth-shell">
     <header class="auth-heading">
-        <p class="eyebrow">Your fitness journey</p>
-        <h1>Gym Tracker</h1>
-        <p>Keep your nutrition and training data private and in one place.</p>
+        <a class="brand" href="/" aria-label="Gym Tracker home"><span class="brand-mark" aria-hidden="true">GT</span> Gym Tracker<span class="brand-dot" aria-hidden="true">.</span></a>
+        <h1>Show up.<br>Track it.<br><span class="accent">Keep growing.</span></h1>
+        <p>A little more intention in every session. Keep your workouts, nutrition, and progress together in your own private space.</p>
+        <div class="auth-detail"><span aria-hidden="true">↗</span><span>Your sessions. Your numbers. Your progress.</span></div>
     </header>
 
+    <div class="auth-panel">
+    <div class="auth-switch" role="group" aria-label="Account access">
+        <button id="show-sign-in" type="button" aria-controls="sign-in-panel" aria-pressed="true">Sign in</button>
+        <button id="show-registration" type="button" aria-controls="registration-panel" aria-pressed="false">Create account</button>
+    </div>
     <p id="auth-page-status" class="status" aria-live="polite"></p>
+    <noscript><p class="status error">Please enable JavaScript to sign in and use your tracker.</p></noscript>
 
     <div class="auth-grid">
-        <section class="auth-card">
+        <section id="sign-in-panel" class="auth-card" aria-labelledby="sign-in-title">
             <div>
                 <p class="eyebrow">Welcome back</p>
-                <h2>Sign in</h2>
+                <h2 id="sign-in-title">Good to see you again.</h2>
             </div>
 
             <form id="login-form" class="auth-form">
@@ -58,13 +65,14 @@
             </form>
         </section>
 
-        <section class="auth-card">
+        <section id="registration-panel" class="auth-card" aria-labelledby="registration-title" hidden>
             <div>
                 <p class="eyebrow">New here?</p>
-                <h2>Create an account</h2>
+                <h2 id="registration-title">Make room for progress.</h2>
             </div>
 
             <form id="registration-form" class="auth-form">
+                <p class="form-hint">Choose a password of 12–64 characters and set your daily nutrition targets to get started.</p>
                 <div class="form-grid">
                     <label class="field">
                         <span>Name</span>
@@ -164,6 +172,7 @@
                 </p>
             </form>
         </section>
+    </div>
     </div>
 </main>
 </body>
