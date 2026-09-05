@@ -196,6 +196,18 @@
     </section>
     </div>
 
+    <dialog id="rest-confirm-dialog" class="confirmation-dialog" aria-labelledby="rest-confirm-title" aria-describedby="rest-confirm-description">
+        <form method="dialog">
+            <p class="eyebrow">Update training log</p>
+            <h2 id="rest-confirm-title">Change this workout to a rest day?</h2>
+            <p id="rest-confirm-description" class="confirmation-description">Saving as a rest day will remove this workout’s exercises and sets. This cannot be undone.</p>
+            <div class="confirmation-actions">
+                <button type="submit" value="cancel" class="secondary-button" autofocus>Keep editing</button>
+                <button type="submit" value="confirm">Save as rest day</button>
+            </div>
+        </form>
+    </dialog>
+
     <dialog id="account-dialog" aria-labelledby="account-title">
         <h2 id="account-title">Your account and data</h2>
         <p>Download your profile, targets, nutrition, workouts and templates as JSON.</p>
