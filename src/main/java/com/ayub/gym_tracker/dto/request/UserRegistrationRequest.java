@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
+
 public record UserRegistrationRequest(
         @NotBlank
         @Email
@@ -20,8 +22,18 @@ public record UserRegistrationRequest(
         @Size(min = 12, max = 64)
         String password,
 
+        LocalDate startDate,
+
         @NotNull
         @Valid
         DailyTargetRequest targets
 ) {
+    public UserRegistrationRequest(
+            String email,
+            String displayName,
+            String password,
+            DailyTargetRequest targets
+    ) {
+        this(email, displayName, password, null, targets);
+    }
 }
