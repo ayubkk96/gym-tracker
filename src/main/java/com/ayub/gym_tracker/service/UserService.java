@@ -59,7 +59,9 @@ public class UserService {
             throw new EmailAlreadyExistsException(email);
         }
 
-        LocalDate startDate = LocalDate.now();
+        LocalDate startDate = request.startDate() == null
+                ? LocalDate.now()
+                : request.startDate();
         DailyTargetRequest targets = request.targets();
 
         DailyTarget dailyTarget = new DailyTarget(
