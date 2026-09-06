@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Locale;
 
 @Service
@@ -58,6 +59,9 @@ public class UserService {
             throw new EmailAlreadyExistsException(email);
         }
 
+        LocalDate startDate = request.startDate() == null
+                ? LocalDate.now()
+                : request.startDate();
         DailyTargetRequest targets = request.targets();
 
         DailyTarget dailyTarget = new DailyTarget(
@@ -66,7 +70,7 @@ public class UserService {
                 targets.proteinG(),
                 targets.carbsG(),
                 targets.fatG(),
-                request.startDate()
+                startDate
         );
 
         dailyTargetRepository.save(dailyTarget);
@@ -75,7 +79,7 @@ public class UserService {
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getDisplayName(),
-                request.startDate()
+                startDate
         );
     }
 }

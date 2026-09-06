@@ -23,7 +23,6 @@ public record UserRegistrationRequest(
         @Size(min = 12, max = 64)
         String password,
 
-        @NotNull
         @PastOrPresent
         LocalDate startDate,
 
@@ -31,4 +30,12 @@ public record UserRegistrationRequest(
         @Valid
         DailyTargetRequest targets
 ) {
+    public UserRegistrationRequest(
+            String email,
+            String displayName,
+            String password,
+            DailyTargetRequest targets
+    ) {
+        this(email, displayName, password, null, targets);
+    }
 }
