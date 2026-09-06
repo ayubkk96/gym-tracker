@@ -47,16 +47,14 @@ class UserServiceTest {
     }
 
     @Test
-    void normalizesEmailAndStoresOnlyThePasswordHash() {
+    void normalizesEmailStoresPasswordHashAndStartsTrackingToday() {
         String rawPassword = "a-secure-password";
         String passwordHash = "$2a$10$encoded-password";
-        LocalDate startDate = LocalDate.of(2026, 9, 5);
         UserRegistrationRequest request =
                 new UserRegistrationRequest(
                         "  Bob@Example.com ",
                         "  Bob Example  ",
                         rawPassword,
-                        startDate,
                         new DailyTargetRequest(
                                 2450,
                                 new BigDecimal("180"),
@@ -87,13 +85,14 @@ class UserServiceTest {
         assertNotEquals(rawPassword, savedUser.getPasswordHash());
         assertEquals("bob@example.com", response.email());
         assertEquals("Bob Example", response.displayName());
-        assertEquals(startDate, response.startDate());
+        assertEquals(LocalDate.now(), response.startDate());
 
         ArgumentCaptor<DailyTarget> targetCaptor =
                 ArgumentCaptor.forClass(DailyTarget.class);
         verify(dailyTargetRepository).save(targetCaptor.capture());
         assertEquals(savedUser, targetCaptor.getValue().getUser());
         assertEquals(2450, targetCaptor.getValue().getCalories());
+        assertEquals(LocalDate.now(), targetCaptor.getValue().getEffectiveFrom());
     }
 
     @Test
@@ -103,7 +102,6 @@ class UserServiceTest {
                         "bob@example.com",
                         "Bob",
                         "a-secure-password",
-                        LocalDate.of(2026, 9, 5),
                         new DailyTargetRequest(
                                 2450,
                                 new BigDecimal("180"),
