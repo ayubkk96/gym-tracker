@@ -15,7 +15,6 @@ const registrationStatus =
 let csrfToken = null;
 let csrfHeaderName = "X-CSRF-TOKEN";
 
-registrationForm.elements.startDate.value = getLocalDate();
 setFormsDisabled(true);
 
 loginForm.addEventListener("submit", signIn);
@@ -129,7 +128,6 @@ async function register(event) {
         email: fields.email.value.trim(),
         displayName: fields.displayName.value.trim(),
         password: fields.password.value,
-        startDate: fields.startDate.value,
         targets: {
             calories: Number(fields.calories.value),
             proteinG: Number(fields.proteinG.value),
@@ -255,13 +253,4 @@ function showStatus(element, message, type) {
     element.textContent = message;
     element.classList.remove("error", "success");
     element.classList.add(type);
-}
-
-function getLocalDate() {
-    const now = new Date();
-    const offset = now.getTimezoneOffset() * 60_000;
-
-    return new Date(now.getTime() - offset)
-        .toISOString()
-        .slice(0, 10);
 }
