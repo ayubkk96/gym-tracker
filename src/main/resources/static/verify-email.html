@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify email · Gym Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="verify-email.js" defer></script>
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <header class="auth-heading">
+        <a class="brand" href="/login.html" aria-label="Gym Tracker sign in"><span class="brand-mark" aria-hidden="true">GT</span> Gym Tracker<span class="brand-dot" aria-hidden="true">.</span></a>
+        <h1>One last<br><span class="accent">step.</span></h1>
+        <p>Verify the email address you used to create your account before signing in.</p>
+    </header>
+
+    <div class="auth-panel">
+        <section class="auth-card" aria-labelledby="verification-title">
+            <div>
+                <p class="eyebrow">Email verification</p>
+                <h2 id="verification-title">Confirm your inbox.</h2>
+            </div>
+
+            <p id="verification-status" class="status" aria-live="polite">Checking your verification link…</p>
+
+            <form id="resend-form" class="auth-form">
+                <p class="form-hint">No email, or the link expired? Enter your account email and we’ll send another verification link.</p>
+                <label class="field">
+                    <span>Email</span>
+                    <input name="email" type="email" autocomplete="email" maxlength="255" required>
+                </label>
+                <button id="resend-button" type="submit">Resend verification email</button>
+                <p id="resend-status" class="status" aria-live="polite"></p>
+            </form>
+
+            <a href="/login.html">Back to sign in</a>
+        </section>
+    </div>
+</main>
+</body>
+</html>
