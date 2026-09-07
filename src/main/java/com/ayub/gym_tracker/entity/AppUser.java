@@ -30,9 +30,8 @@ public class AppUser {
     @Column(name = "password_version", nullable = false)
     private long passwordVersion;
 
-    public long getPasswordVersion() {
-        return passwordVersion;
-    }
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = true;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -46,9 +45,19 @@ public class AppUser {
             String displayName,
             String passwordHash
     ) {
+        this(email, displayName, passwordHash, true);
+    }
+
+    public AppUser(
+            String email,
+            String displayName,
+            String passwordHash,
+            boolean emailVerified
+    ) {
         this.email = email;
         this.displayName = displayName;
         this.passwordHash = passwordHash;
+        this.emailVerified = emailVerified;
     }
 
     public Long getId() {
@@ -65,6 +74,14 @@ public class AppUser {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public long getPasswordVersion() {
+        return passwordVersion;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
     public Instant getCreatedAt() {
