@@ -41,5 +41,6 @@ public class AuthRateLimiter {
     public void purgeExpired() {
         jdbc.update("DELETE FROM auth_rate_limits WHERE expires_at < now()");
         jdbc.update("DELETE FROM password_reset_tokens WHERE expires_at < now()");
+        jdbc.update("DELETE FROM email_verification_tokens WHERE expires_at < now()");
     }
 }

@@ -37,6 +37,21 @@ public class UserService {
     public UserRegistrationResponse register(
             UserRegistrationRequest request
     ) {
+        return registerInternal(request, false);
+    }
+
+    @Transactional
+    public UserRegistrationResponse register(
+            UserRegistrationRequest request,
+            boolean emailVerificationRequired
+    ) {
+        return registerInternal(request, emailVerificationRequired);
+    }
+
+    private UserRegistrationResponse registerInternal(
+            UserRegistrationRequest request,
+            boolean emailVerificationRequired
+    ) {
         String email = request.email()
                 .trim()
                 .toLowerCase(Locale.ROOT);
@@ -48,7 +63,8 @@ public class UserService {
         AppUser user = new AppUser(
                 email,
                 request.displayName().trim(),
-                passwordEncoder.encode(request.password())
+                passwordEncoder.encode(request.password()),
+                !emailVerificationRequired
         );
 
         AppUser savedUser;
@@ -79,7 +95,8 @@ public class UserService {
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getDisplayName(),
-                startDate
+                startDate,
+                emailVerificationRequired
         );
     }
 }

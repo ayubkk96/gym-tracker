@@ -64,4 +64,25 @@ class SecurityConfigTest {
                 )
         );
     }
+
+    @Test
+    void hidesAccountsUntilTheirEmailIsVerified() {
+        AppUser pendingUser = new AppUser(
+                "pending@example.com",
+                "Pending",
+                "password-hash",
+                false
+        );
+
+        when(appUserRepository.findByEmailIgnoreCase(
+                "pending@example.com"
+        )).thenReturn(Optional.of(pendingUser));
+
+        assertThrows(
+                UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername(
+                        "pending@example.com"
+                )
+        );
+    }
 }

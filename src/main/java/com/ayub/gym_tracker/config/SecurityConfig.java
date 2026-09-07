@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +33,7 @@ public class SecurityConfig {
             AppUser user = appUserRepository
                     .findByEmailIgnoreCase(email)
                     .filter(AppUser::hasPassword)
+                    .filter(AppUser::isEmailVerified)
                     .orElseThrow(() ->
                             new UsernameNotFoundException(
                                     "Invalid email or password."
@@ -59,6 +59,8 @@ public class SecurityConfig {
                                 "/api/auth/session",
                                 "/api/auth/password-reset/request",
                                 "/api/auth/password-reset/confirm",
+                                "/api/auth/email-verification/request",
+                                "/api/auth/email-verification/confirm",
                                 "/api/users"
                         )
                         .permitAll()
@@ -135,6 +137,8 @@ public class SecurityConfig {
                                 "/auth.js",
                                 "/reset-password.html",
                                 "/reset-password.js",
+                                "/verify-email.html",
+                                "/verify-email.js",
                                 "/styles.css",
                                 "/favicon.ico",
                                 "/error"

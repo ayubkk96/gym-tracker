@@ -19,8 +19,10 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,18 +52,7 @@ class UserServiceTest {
     void normalizesEmailStoresPasswordHashAndStartsTrackingToday() {
         String rawPassword = "a-secure-password";
         String passwordHash = "$2a$10$encoded-password";
-        UserRegistrationRequest request =
-                new UserRegistrationRequest(
-                        "  Bob@Example.com ",
-                        "  Bob Example  ",
-                        rawPassword,
-                        new DailyTargetRequest(
-                                2450,
-                                new BigDecimal("180"),
-                                new BigDecimal("275"),
-                                new BigDecimal("75")
-                        )
-                );
+        UserRegistrationRequest request = request(rawPassword);
 
         when(appUserRepository.findByEmailIgnoreCase(
                 "bob@example.com"
@@ -83,6 +74,8 @@ class UserServiceTest {
         assertEquals("Bob Example", savedUser.getDisplayName());
         assertEquals(passwordHash, savedUser.getPasswordHash());
         assertNotEquals(rawPassword, savedUser.getPasswordHash());
+        assertTrue(savedUser.isEmailVerified());
+        assertFalse(response.emailVerificationRequired());
         assertEquals("bob@example.com", response.email());
         assertEquals("Bob Example", response.displayName());
         assertEquals(LocalDate.now(), response.startDate());
@@ -96,19 +89,26 @@ class UserServiceTest {
     }
 
     @Test
+    void createsPendingAccountWhenEmailVerificationIsRequired() {
+        UserRegistrationRequest request = request("a-secure-password");
+        when(appUserRepository.findByEmailIgnoreCase("bob@example.com"))
+                .thenReturn(Optional.empty());
+        when(passwordEncoder.encode("a-secure-password"))
+                .thenReturn("password-hash");
+        when(appUserRepository.saveAndFlush(any(AppUser.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserRegistrationResponse response = userService.register(request, true);
+
+        ArgumentCaptor<AppUser> userCaptor = ArgumentCaptor.forClass(AppUser.class);
+        verify(appUserRepository).saveAndFlush(userCaptor.capture());
+        assertFalse(userCaptor.getValue().isEmailVerified());
+        assertTrue(response.emailVerificationRequired());
+    }
+
+    @Test
     void convertsConcurrentDuplicateEmailsIntoAConflict() {
-        UserRegistrationRequest request =
-                new UserRegistrationRequest(
-                        "bob@example.com",
-                        "Bob",
-                        "a-secure-password",
-                        new DailyTargetRequest(
-                                2450,
-                                new BigDecimal("180"),
-                                new BigDecimal("275"),
-                                new BigDecimal("75")
-                        )
-                );
+        UserRegistrationRequest request = request("a-secure-password");
 
         when(appUserRepository.findByEmailIgnoreCase(
                 "bob@example.com"
@@ -127,5 +127,19 @@ class UserServiceTest {
 
         verify(dailyTargetRepository, never())
                 .save(any(DailyTarget.class));
+    }
+
+    private UserRegistrationRequest request(String password) {
+        return new UserRegistrationRequest(
+                "  Bob@Example.com ",
+                "  Bob Example  ",
+                password,
+                new DailyTargetRequest(
+                        2450,
+                        new BigDecimal("180"),
+                        new BigDecimal("275"),
+                        new BigDecimal("75")
+                )
+        );
     }
 }

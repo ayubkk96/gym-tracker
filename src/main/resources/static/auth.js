@@ -97,7 +97,7 @@ async function signIn(event) {
         console.error(error);
         showStatus(
             loginStatus,
-            "Invalid email or password.",
+            "Invalid email or password. If you just registered, verify your email before signing in.",
             "error"
         );
     } finally {
@@ -156,6 +156,12 @@ async function register(event) {
                 await registrationError(response),
                 "error"
             );
+            return;
+        }
+
+        const account = await response.json();
+        if (account.emailVerificationRequired) {
+            window.location.replace("/verify-email.html");
             return;
         }
 

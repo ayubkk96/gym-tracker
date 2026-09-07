@@ -26,8 +26,10 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
             int limit = switch (path) {
                 case "/api/auth/login" -> 100;
                 case "/api/users" -> hasProxyClientAddress(request) ? REGISTRATION_GLOBAL_LIMIT : 10;
-                case "/api/auth/password-reset/request" -> 30;
-                case "/api/auth/password-reset/confirm" -> 60;
+                case "/api/auth/password-reset/request",
+                     "/api/auth/email-verification/request" -> 30;
+                case "/api/auth/password-reset/confirm",
+                     "/api/auth/email-verification/confirm" -> 60;
                 default -> 0;
             };
             if (limit != 0) {
