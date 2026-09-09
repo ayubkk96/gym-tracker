@@ -73,12 +73,13 @@ async function signIn(event) {
 
     const email = loginForm.elements.email.value.trim();
     const password = loginForm.elements.password.value;
+    const rememberMe = loginForm.elements.rememberMe.checked;
 
     setButtonLoading(signInButton, true, "Signing in…");
     clearStatus(loginStatus);
 
     try {
-        const response = await submitLogin(email, password);
+        const response = await submitLogin(email, password, rememberMe);
 
         if (response.status === 429) {
             showStatus(loginStatus, "Too many sign-in attempts. Please wait 15 minutes and try again.", "error");
@@ -193,11 +194,15 @@ async function register(event) {
     }
 }
 
-function submitLogin(email, password) {
+function submitLogin(email, password, rememberMe = false) {
     const body = new URLSearchParams({
         username: email,
         password
     });
+
+    if (rememberMe) {
+        body.set("remember-me", "true");
+    }
 
     return fetch("/api/auth/login", {
         method: "POST",

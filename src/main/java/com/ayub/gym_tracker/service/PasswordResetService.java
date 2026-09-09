@@ -57,6 +57,12 @@ public class PasswordResetService {
         if (consumed == 0) return false;
         jdbc.update("UPDATE app_users SET password_hash = ?, password_version = password_version + 1 WHERE id = ?",
                 encoder.encode(password), userId);
+        // A password reset is an explicit sign-out-everywhere boundary. Normal
+        // sessions are rejected by password_version; persistent logins must also go.
+        jdbc.update("""
+                DELETE FROM persistent_logins
+                WHERE username = (SELECT email FROM app_users WHERE id = ?)
+                """, userId);
         return true;
     }
 }
