@@ -16,9 +16,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
+    private static final int REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
+    private static final String REMEMBER_ME_COOKIE = "gym-tracker-remember-me";
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,9 +51,23 @@ public class SecurityConfig {
     }
 
     @Bean
+    public PersistentTokenRepository persistentTokenRepository(
+            DataSource dataSource
+    ) {
+        JdbcTokenRepositoryImpl repository =
+                new JdbcTokenRepositoryImpl();
+        repository.setDataSource(dataSource);
+        return repository;
+    }
+
+    @Bean
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(
-            HttpSecurity http, AuthRateLimiter limiter, AppUserRepository users
+            HttpSecurity http,
+            AuthRateLimiter limiter,
+            AppUserRepository users,
+            UserDetailsService userDetailsService,
+            PersistentTokenRepository persistentTokens
     ) throws Exception {
         http
                 .securityMatcher("/api/**")
@@ -88,6 +108,13 @@ public class SecurityConfig {
                         )
                         .permitAll()
                 )
+                .rememberMe(remember -> remember
+                        .tokenRepository(persistentTokens)
+                        .userDetailsService(userDetailsService)
+                        .tokenValiditySeconds(REMEMBER_ME_SECONDS)
+                        .rememberMeCookieName(REMEMBER_ME_COOKIE)
+                        .rememberMeParameter("remember-me")
+                )
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler((request, response, authentication) ->
@@ -127,7 +154,10 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain pageSecurityFilterChain(
-            HttpSecurity http, AppUserRepository users
+            HttpSecurity http,
+            AppUserRepository users,
+            UserDetailsService userDetailsService,
+            PersistentTokenRepository persistentTokens
     ) throws Exception {
         http
                 .addFilterAfter(new PasswordSessionFilter(users), AnonymousAuthenticationFilter.class)
@@ -146,6 +176,13 @@ public class SecurityConfig {
                         .permitAll()
                         .anyRequest()
                         .authenticated()
+                )
+                .rememberMe(remember -> remember
+                        .tokenRepository(persistentTokens)
+                        .userDetailsService(userDetailsService)
+                        .tokenValiditySeconds(REMEMBER_ME_SECONDS)
+                        .rememberMeCookieName(REMEMBER_ME_COOKIE)
+                        .rememberMeParameter("remember-me")
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(
