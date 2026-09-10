@@ -164,6 +164,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/login.html",
+                                "/demo.html",
+                                "/demo.js",
                                 "/auth.js",
                                 "/reset-password.html",
                                 "/reset-password.js",

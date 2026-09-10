@@ -29,6 +29,7 @@ function showAuthPanel(registering) {
     document.querySelector("#show-registration").setAttribute("aria-pressed", String(registering));
 }
 
+showAuthPanel(window.location.hash === "#register");
 initialiseAuthentication();
 
 async function initialiseAuthentication() {
