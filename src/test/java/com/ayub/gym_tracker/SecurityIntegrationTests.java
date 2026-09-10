@@ -66,6 +66,16 @@ class SecurityIntegrationTests {
     }
 
     @Test
+    void servesTheDemoWithoutGrantingAccessToPrivateData() throws Exception {
+        mockMvc.perform(get("/demo.html")).andExpect(status().isOk());
+        mockMvc.perform(get("/demo.js")).andExpect(status().isOk());
+        mockMvc.perform(get("/api/dashboard").queryParam("date", "2026-09-05"))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/auth/session"))
+                .andExpect(jsonPath("$.authenticated").value(false));
+    }
+
+    @Test
     void rejectsRegistrationWithoutCsrfProtection() throws Exception {
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -13,6 +13,19 @@
 .recovery-shell h1 { font-size: 1.7rem; }
 .recovery-shell .field > span, .recovery-shell .form-hint { font-size: .875rem; }
 .recovery-links { margin: 24px 0 0; font-size: .875rem; }
+/* Public sample dashboard and login invitation. */
+.demo-invitation { margin-top: 28px; }
+.demo-invitation p { font-size: .85rem; }
+.demo-link { display: inline-flex; align-items: center; justify-content: center; gap: 12px; background: var(--accent); color: #19210c; padding: 12px 18px; border-radius: 12px; font-weight: 650; text-decoration: none; text-align: center; }
+.demo-link:hover { background: var(--accent-hover); color: #19210c; }
+.demo-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+.demo-banner > strong { color: var(--accent); white-space: nowrap; }
+.demo-banner > span { flex: 1 1 240px; color: var(--muted); font-size: .85rem; }
+.demo-banner p { color: var(--muted); }
+#demo-date { max-width: 100%; }
+#demo-history .history-meta { grid-column: 1; }
+.exercise-heading h4 { margin: 0; font-size: .92rem; }
+
 :root {
     color-scheme: dark;
     --background: #101311;
