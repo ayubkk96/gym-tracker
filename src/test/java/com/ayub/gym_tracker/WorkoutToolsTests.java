@@ -49,6 +49,49 @@ class WorkoutToolsTests {
                 .andExpect(status().isOk()).andReturn().getRequest().getSession(false);
     }
 
+    @Test void targetsCanBeEditedWithoutChangingEarlierDatesOrOtherAccounts() throws Exception {
+        var alice = account();
+        var bob = account();
+        String body = """
+                {"effectiveFrom":"2026-09-01","calories":2200,"proteinG":170,"carbsG":250,"fatG":60}
+                """;
+        for (int i = 0; i < 2; i++) {
+            mvc.perform(put("/api/targets").session(alice).with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isOk());
+        }
+        entityManager.flush();
+        entityManager.clear();
+        mvc.perform(get("/api/dashboard").session(alice).param("date", "2026-08-31"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.targets.calories").value(2450));
+        mvc.perform(get("/api/dashboard").session(alice).param("date", "2026-09-02"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.targets.calories").value(2200))
+                .andExpect(jsonPath("$.targets.proteinG").value(170));
+        mvc.perform(get("/api/dashboard").session(bob).param("date", "2026-09-02"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.targets.calories").value(2450));
+        mvc.perform(get("/api/account/export").session(alice))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.targets.length()").value(2));
+        mvc.perform(put("/api/targets").session(alice).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(body.replace("2200", "2100")))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/dashboard").session(alice).param("date", "2026-09-01"))
+                .andExpect(jsonPath("$.targets.calories").value(2100));
+    }
+
+    @Test void targetUpdatesRequireCsrfAndValidValues() throws Exception {
+        var session = account();
+        String body = """
+                {"effectiveFrom":"2026-09-01","calories":2200,"proteinG":170,"carbsG":250,"fatG":60}
+                """;
+        mvc.perform(put("/api/targets").session(session)
+                .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+        for (String invalid : new String[] {body.replace("2200", "0"), body.replace("170", "-1"),
+                body.replace("170", "10000"), body.replace("\"2026-09-01\"", "null")}) {
+            mvc.perform(put("/api/targets").session(session).with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON).content(invalid)).andExpect(status().isBadRequest());
+        }
+    }
+
     @Test void editingWorkoutToRestReplacesOriginalAndCollapsesExistingRest() throws Exception {
         var alice=account();
         var bob=account();

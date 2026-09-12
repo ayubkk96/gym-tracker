@@ -12,6 +12,7 @@
     <script src="workout-tools.js" defer></script>
     <script src="progress.js" defer></script>
     <script src="account.js" defer></script>
+    <script src="targets.js" defer></script>
 </head>
 
 <body>
@@ -64,6 +65,7 @@
             </div>
 
             <div class="section-actions">
+                <button id="open-targets" class="secondary-button" type="button" data-dashboard-action disabled>Edit targets</button>
     <span id="weight-value" class="weight">
         Weight: —
     </span>
@@ -208,6 +210,22 @@
         </form>
     </dialog>
 
+    <dialog id="targets-dialog" aria-labelledby="targets-title">
+        <h2 id="targets-title">Edit daily targets</h2>
+        <p>Set your calorie and macro goals. Earlier dates keep their targets. These values apply from the chosen date until your next target change.</p>
+        <form id="targets-form">
+            <div class="form-grid">
+                <label class="field"><span>Apply from</span><input name="effectiveFrom" type="date" required></label>
+                <label class="field"><span>Calories (kcal)</span><input name="calories" type="number" min="1" max="2147483647" step="1" required></label>
+                <label class="field"><span>Protein (g)</span><input name="proteinG" type="number" min="0" max="9999" step="1" required></label>
+                <label class="field"><span>Carbs (g)</span><input name="carbsG" type="number" min="0" max="9999" step="1" required></label>
+                <label class="field"><span>Fat (g)</span><input name="fatG" type="number" min="0" max="9999" step="1" required></label>
+            </div>
+            <p id="targets-status" class="status" role="status"></p>
+            <button id="save-targets" type="submit">Save targets</button>
+        </form>
+        <button id="close-targets" class="secondary-button" type="button">Cancel</button>
+    </dialog>
     <dialog id="account-dialog" aria-labelledby="account-title">
         <h2 id="account-title">Your account and data</h2>
         <p>Download your profile, targets, nutrition, workouts and templates as JSON.</p>

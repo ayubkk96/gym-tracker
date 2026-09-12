@@ -48,6 +48,7 @@ jobs:
           node --check src/main/resources/static/workout-tools.js
           node --check src/main/resources/static/progress.js
           node --check src/main/resources/static/account.js
+          node --check src/main/resources/static/targets.js
           node --check src/main/resources/static/auth.js
           node --check src/main/resources/static/demo.js
           node --check src/main/resources/static/reset-password.js
