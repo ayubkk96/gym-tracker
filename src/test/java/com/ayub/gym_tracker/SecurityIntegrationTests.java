@@ -36,6 +36,9 @@ class SecurityIntegrationTests {
     @Test
     void servesThePublicHomepageAndProtectsTheDashboard() throws Exception {
         mockMvc.perform(get("/"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/index.html"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "My Gym Tracker – Free Workout and Nutrition Tracker"
