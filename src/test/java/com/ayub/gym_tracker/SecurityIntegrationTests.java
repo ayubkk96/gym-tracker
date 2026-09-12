@@ -41,7 +41,10 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/index.html"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
-                        "My Gym Tracker – Free Workout and Nutrition Tracker"
+                        "My Gym Tracker"
+                )))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Track workouts, weights, reps, calories and macros"
                 )));
 
         mockMvc.perform(get("/dashboard.html"))
