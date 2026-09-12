@@ -34,10 +34,37 @@ class SecurityIntegrationTests {
     }
 
     @Test
-    void redirectsTheDashboardPageToLogin() throws Exception {
+    void servesThePublicHomepageAndProtectsTheDashboard() throws Exception {
         mockMvc.perform(get("/"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/index.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "My Gym Tracker"
+                )))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Track workouts, weights, reps, calories and macros"
+                )));
+
+        mockMvc.perform(get("/dashboard.html"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login.html"));
+    }
+
+    @Test
+    void servesCrawlerFilesWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/robots.txt"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Sitemap: https://mygymtracker.co.uk/sitemap.xml"
+                )));
+
+        mockMvc.perform(get("/sitemap.xml"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "https://mygymtracker.co.uk/"
+                )));
     }
 
     @Test

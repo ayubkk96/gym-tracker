@@ -74,7 +74,7 @@ class RememberMeIntegrationTests {
 
         // No JSESSIONID is carried into this request: the persistent cookie alone
         // must restore the authenticated principal on the page security chain.
-        mockMvc.perform(get("/").cookie(remember))
+        mockMvc.perform(get("/dashboard.html").cookie(remember))
                 .andExpect(status().isOk());
     }
 
@@ -125,7 +125,7 @@ class RememberMeIntegrationTests {
         ));
         assertEquals(0, persistentLoginCount());
 
-        mockMvc.perform(get("/").cookie(remember))
+        mockMvc.perform(get("/dashboard.html").cookie(remember))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login.html"));
     }

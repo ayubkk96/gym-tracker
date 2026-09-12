@@ -1,524 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gym Tracker – Free Workout and Nutrition Tracker</title>
+    <meta name="description" content="Track workouts, weights, reps, calories and macros from your phone. Try My Gym Tracker free without installing an app.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mygymtracker.co.uk/">
 
-    <title>Gym & Nutrition Tracker</title>
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="My Gym Tracker">
+    <meta property="og:title" content="My Gym Tracker – Free Workout and Nutrition Tracker">
+    <meta property="og:description" content="Keep your workouts, nutrition and progress together in one private, phone-friendly tracker.">
+    <meta property="og:url" content="https://mygymtracker.co.uk/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="My Gym Tracker – Free Workout and Nutrition Tracker">
+    <meta name="twitter:description" content="Track workouts, weights, reps, calories and macros from your phone.">
 
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
-    <script src="workout-tools.js" defer></script>
-    <script src="progress.js" defer></script>
-    <script src="account.js" defer></script>
-    <script src="targets.js" defer></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "My Gym Tracker",
+      "url": "https://mygymtracker.co.uk/",
+      "description": "A free, phone-friendly workout and nutrition tracker for logging exercises, weights, reps, calories, macros and progress.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires a modern web browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "GBP"
+      }
+    }
+    </script>
 </head>
+<body class="landing-page">
+<a class="skip-link" href="#main-content">Skip to content</a>
 
-<body>
-<a class="skip-link" href="#dashboard-content">Skip to dashboard</a>
-<div class="topbar">
-    <a class="brand" href="/" aria-label="Gym Tracker home"><span class="brand-mark" aria-hidden="true">GT</span> Gym Tracker<span class="brand-dot" aria-hidden="true">.</span></a>
-    <nav class="main-nav" aria-label="Dashboard sections">
-        <a href="#nutrition">Overview</a>
-        <a href="#training">Training</a>
-        <a href="#history">History</a>
+<header class="landing-nav">
+    <a class="brand" href="/" aria-label="My Gym Tracker home"><span class="brand-mark" aria-hidden="true">GT</span> Gym Tracker<span class="brand-dot" aria-hidden="true">.</span></a>
+    <nav aria-label="Account links">
+        <a class="landing-sign-in" href="login.html">Sign in</a>
+        <a class="demo-link" href="login.html#register">Create account</a>
     </nav>
-    <div class="user-menu">
-        <span id="current-user" class="current-user">Signed in</span>
-        <button id="open-account" class="secondary-button compact-button" type="button">Account</button>
-        <button id="logout-button" class="secondary-button compact-button" type="button">Sign Out</button>
-    </div>
-</div>
-<header class="header">
-    <div>
-        <p class="eyebrow">Make every session count</p>
-        <h1>Your overview<span class="accent">.</span></h1>
-        <p class="page-description">Your training and nutrition, all in one place.</p>
-    </div>
-
-    <div class="header-controls">
-        <div class="date-control">
-            <label for="dashboard-date">Viewing date</label>
-
-            <div class="date-row">
-                <button id="previous-date" class="icon-button" type="button" aria-label="Previous date">‹</button>
-                <input id="dashboard-date" type="date" required>
-                <button id="next-date" class="icon-button" type="button" aria-label="Next date">›</button>
-                <button id="load-dashboard" type="button">
-                    View
-                </button>
-            </div>
-            <button id="today-date" class="text-button" type="button">Back to today</button>
-        </div>
-    </div>
 </header>
 
-<main id="dashboard-content" tabindex="-1">
-    <p id="status-message" class="status" role="status" aria-live="polite"></p>
-
-    <section id="nutrition" aria-labelledby="day-title">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">Nutrition snapshot</p>
-                <h2 id="day-title" tabindex="-1">Your daily intake</h2>
-            </div>
-
-            <div class="section-actions">
-                <button id="open-targets" class="secondary-button" type="button" data-dashboard-action disabled>Edit targets</button>
-    <span id="weight-value" class="weight">
-        Weight: —
-    </span>
-                <button
-                        id="open-nutrition-form"
-                        class="secondary-button"
-                        type="button">
-                    + Log nutrition
-                </button>
+<main id="main-content" class="landing-main">
+    <section class="landing-hero" aria-labelledby="landing-title">
+        <div>
+            <p class="eyebrow">Workout and nutrition tracking, together</p>
+            <h1 id="landing-title">Show up. Track it. <span class="accent">Keep growing.</span></h1>
+            <p class="landing-intro">Log your workouts, weights, reps, calories and macros in one private place. It works in your phone's browser, so there is nothing to install and nothing to pay for.</p>
+            <div class="landing-actions">
+                <a class="demo-link" href="login.html#register">Start tracking free</a>
+                <a class="landing-secondary" href="demo.html">Try the demo</a>
             </div>
         </div>
 
-        <div class="macro-grid">
-            <article class="macro-card calories-card">
-                <span>Calories</span>
-                <strong id="calories-value">—</strong>
-                <span id="calories-target" class="macro-target">Daily target —</span>
-                <progress id="calories-progress" aria-label="Calories toward daily target" value="0" max="1"></progress>
-            </article>
-
-            <article class="macro-card">
-                <span>Protein</span>
-                <strong id="protein-value">—</strong>
-                <span id="protein-target" class="macro-target">Daily target —</span>
-                <progress id="protein-progress" aria-label="Protein toward daily target" value="0" max="1"></progress>
-            </article>
-
-            <article class="macro-card">
-                <span>Carbs</span>
-                <strong id="carbs-value">—</strong>
-                <span id="carbs-target" class="macro-target">Daily target —</span>
-                <progress id="carbs-progress" aria-label="Carbs toward daily target" value="0" max="1"></progress>
-            </article>
-
-            <article class="macro-card">
-                <span>Fat</span>
-                <strong id="fat-value">—</strong>
-                <span id="fat-target" class="macro-target">Daily target —</span>
-                <progress id="fat-progress" aria-label="Fat toward daily target" value="0" max="1"></progress>
-            </article>
-        </div>
-
-        <p id="nutrition-notes" class="notes"></p>
+        <aside class="landing-preview" aria-label="Example progress summary">
+            <p class="eyebrow">Your day at a glance</p>
+            <strong>Everything that matters.</strong>
+            <div class="landing-stats">
+                <div><span>Workout</span><b>Chest + triceps</b></div>
+                <div><span>Protein</span><b>180g</b></div>
+                <div><span>Calories</span><b>2,450</b></div>
+                <div><span>Progress</span><b>Personal records</b></div>
+            </div>
+        </aside>
     </section>
 
-    <section class="weekly-section" aria-labelledby="weekly-title">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">Last seven calendar days</p>
-                <h2 id="weekly-title">Your week at a glance</h2>
-            </div>
-
-            <span id="weekly-period" class="history-meta">—</span>
+    <section class="landing-features" aria-labelledby="features-title">
+        <div class="landing-section-heading">
+            <p class="eyebrow">Built for consistent progress</p>
+            <h2 id="features-title">Your training and nutrition in one place.</h2>
         </div>
-
-        <div class="weekly-grid">
-            <article class="summary-card">
-                <span>Average calories</span>
-                <strong id="average-calories">—</strong>
+        <div class="landing-feature-grid">
+            <article>
+                <span aria-hidden="true">01</span>
+                <h3>Log every session</h3>
+                <p>Record exercises, weights, reps and notes, then repeat previous workouts or reuse your own templates.</p>
             </article>
-
-            <article class="summary-card">
-                <span>Average protein</span>
-                <strong id="average-protein">—</strong>
+            <article>
+                <span aria-hidden="true">02</span>
+                <h3>Track calories and macros</h3>
+                <p>Keep calories, protein, carbohydrates, fat and body weight beside your training history.</p>
             </article>
-
-            <article class="summary-card">
-                <span>Average carbs</span>
-                <strong id="average-carbs">—</strong>
-            </article>
-
-            <article class="summary-card">
-                <span>Average fat</span>
-                <strong id="average-fat">—</strong>
-            </article>
-
-            <article class="summary-card">
-                <span>Training sessions</span>
-                <strong id="training-sessions">—</strong>
-            </article>
-
-            <article class="summary-card">
-                <span>Nutrition recorded</span>
-                <strong id="nutrition-days-logged">—</strong>
+            <article>
+                <span aria-hidden="true">03</span>
+                <h3>See your progress</h3>
+                <p>Review recent history, weekly summaries and personal records without digging through notes.</p>
             </article>
         </div>
-        <p class="section-caption">Nutrition averages include recorded dates only.</p>
     </section>
 
-    <div class="dashboard-columns">
-    <section id="training" aria-labelledby="training-title">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">Training log</p>
-                <h2 id="training-title">Training log</h2>
-            </div>
-
-            <button
-                    id="open-workout-form"
-                    class="primary-button"
-                    type="button">
-                + Log workout
-            </button>
+    <section class="landing-cta" aria-labelledby="cta-title">
+        <div>
+            <p class="eyebrow">No download needed</p>
+            <h2 id="cta-title">Take your tracker to every session.</h2>
+            <p>Open it from any modern browser and update your progress straight from your phone.</p>
         </div>
-
-        <div id="workout-container"></div>
+        <a class="demo-link" href="demo.html">Explore the demo</a>
     </section>
-
-    <section id="progress" aria-labelledby="progress-title">
-        <div class="section-heading"><div><p class="eyebrow">Your progress</p><h2 id="progress-title">Personal records</h2></div></div>
-        <div class="progress-controls">
-            <label class="field">Exercise<select id="progress-exercise"><option value="">Choose an exercise</option></select></label>
-            <button id="progress-retry" class="secondary-button" type="button">Refresh progress</button>
-        </div>
-        <p id="progress-status" class="section-caption" role="status"></p>
-        <p class="section-caption">All logged history through the selected date. Heaviest weight uses reps to break ties; exact ties show the earliest date. Bodyweight records use reps per set.</p>
-        <div id="progress-records" class="progress-grid"></div>
-    </section>
-
-    <section id="history" aria-labelledby="history-title">
-        <div class="section-heading">
-            <div>
-                <p class="eyebrow">Last seven calendar days</p>
-                <h2 id="history-title">Recent history</h2>
-            </div>
-        </div>
-
-        <div id="recent-history-container"></div>
-        <p class="section-caption">Select an entry to revisit that date.</p>
-    </section>
-    </div>
-
-    <dialog id="rest-confirm-dialog" class="confirmation-dialog" aria-labelledby="rest-confirm-title" aria-describedby="rest-confirm-description">
-        <form method="dialog">
-            <p class="eyebrow">Update training log</p>
-            <h2 id="rest-confirm-title">Change this workout to a rest day?</h2>
-            <p id="rest-confirm-description" class="confirmation-description">Saving as a rest day will remove this workout’s exercises and sets. This cannot be undone.</p>
-            <div class="confirmation-actions">
-                <button type="submit" value="cancel" class="secondary-button" autofocus>Keep editing</button>
-                <button type="submit" value="confirm">Save as rest day</button>
-            </div>
-        </form>
-    </dialog>
-
-    <dialog id="targets-dialog" aria-labelledby="targets-title">
-        <h2 id="targets-title">Edit daily targets</h2>
-        <p>Set your calorie and macro goals. Earlier dates keep their targets. These values apply from the chosen date until your next target change.</p>
-        <form id="targets-form">
-            <div class="form-grid">
-                <label class="field"><span>Apply from</span><input name="effectiveFrom" type="date" required></label>
-                <label class="field"><span>Calories (kcal)</span><input name="calories" type="number" min="1" max="2147483647" step="1" required></label>
-                <label class="field"><span>Protein (g)</span><input name="proteinG" type="number" min="0" max="9999" step="1" required></label>
-                <label class="field"><span>Carbs (g)</span><input name="carbsG" type="number" min="0" max="9999" step="1" required></label>
-                <label class="field"><span>Fat (g)</span><input name="fatG" type="number" min="0" max="9999" step="1" required></label>
-            </div>
-            <p id="targets-status" class="status" role="status"></p>
-            <button id="save-targets" type="submit">Save targets</button>
-        </form>
-        <button id="close-targets" class="secondary-button" type="button">Cancel</button>
-    </dialog>
-    <dialog id="account-dialog" aria-labelledby="account-title">
-        <h2 id="account-title">Your account and data</h2>
-        <p>Download your profile, targets, nutrition, workouts and templates as JSON.</p>
-        <button id="export-account" class="secondary-button" type="button">Download my data</button>
-        <p id="account-status" class="status" role="status"></p>
-        <form id="delete-account-form">
-            <h3>Delete account permanently</h3>
-            <p>This removes your account, targets, nutrition, workouts, sets and templates from the active database. Download your data first if you want a copy. Deletion cannot be undone in the app.</p>
-            <p class="section-caption">Previously downloaded copies remain on your devices. Hosting backups expire according to the configured retention policy.</p>
-            <label class="field">Current password<input name="password" type="password" autocomplete="current-password" maxlength="128" required></label>
-            <label class="field">Type DELETE to confirm<input name="confirmation" autocomplete="off" pattern="DELETE" required></label>
-            <button id="delete-account-button" class="secondary-button" type="submit">Permanently delete my account</button>
-        </form>
-        <button id="close-account" class="secondary-button" type="button">Close</button>
-    </dialog>
-
-    <dialog id="nutrition-dialog" aria-labelledby="nutrition-form-title">
-        <form id="nutrition-form">
-            <div class="dialog-heading">
-                <div>
-                    <p class="eyebrow">Daily intake</p>
-                    <h2 id="nutrition-form-title">Log nutrition</h2>
-                </div>
-
-                <button
-                        id="close-nutrition-form"
-                        class="icon-button"
-                        type="button"
-                        aria-label="Close">
-                    ×
-                </button>
-            </div>
-
-            <div class="form-grid">
-                <label class="field full-width">
-                    <span>Date</span>
-                    <input
-                            name="date"
-                            type="date"
-                            required>
-                </label>
-
-                <label class="field">
-                    <span>Calories</span>
-                    <input
-                            name="calories"
-                            type="number"
-                            min="1"
-                            required>
-                </label>
-
-                <label class="field">
-                    <span>Protein (g)</span>
-                    <input
-                            name="proteinG"
-                            type="number"
-                            min="0"
-                            required>
-                </label>
-
-                <label class="field">
-                    <span>Carbs (g)</span>
-                    <input
-                            name="carbsG"
-                            type="number"
-                            min="0"
-                            required>
-                </label>
-
-                <label class="field">
-                    <span>Fat (g)</span>
-                    <input
-                            name="fatG"
-                            type="number"
-                            min="0"
-                            required>
-                </label>
-
-                <label class="field full-width">
-                    <span>Morning weight (kg)</span>
-                    <input
-                            name="weightKg"
-                            type="number"
-                            min="1"
-                            step="0.1">
-                </label>
-
-                <label class="field full-width">
-                    <span>Notes</span>
-                    <textarea
-                            name="notes"
-                            rows="3"
-                            maxlength="250"></textarea>
-                </label>
-            </div>
-
-            <p
-                    id="nutrition-form-status"
-                    class="status"
-                    aria-live="polite">
-            </p>
-
-            <div class="dialog-actions">
-                <button
-                        id="cancel-nutrition-form"
-                        class="secondary-button"
-                        type="button">
-                    Cancel
-                </button>
-
-                <button
-                        id="save-nutrition"
-                        type="submit">
-                    Save Nutrition
-                </button>
-            </div>
-        </form>
-    </dialog>
-
-    <dialog id="workout-dialog" class="workout-form-dialog" aria-labelledby="workout-form-title">
-        <form id="workout-form">
-            <div class="dialog-heading">
-                <div>
-                    <p class="eyebrow">Training session</p>
-                    <h2 id="workout-form-title">Log Workout</h2>
-                </div>
-
-                <button
-                        id="close-workout-form"
-                        class="icon-button"
-                        type="button"
-                        aria-label="Close">
-                    ×
-                </button>
-            </div>
-
-            <div id="workout-template-tools" class="template-tools">
-                <label class="field" for="workout-template-select"><span>Start from a template</span>
-                    <select id="workout-template-select"><option value="">Choose a template</option></select>
-                </label>
-                <div class="template-actions">
-                    <button id="apply-workout-template" class="secondary-button" type="button" disabled>Use template</button>
-                    <button id="delete-workout-template" class="secondary-button" type="button" disabled>Delete template</button>
-                </div>
-                <p id="workout-template-status" class="status" role="status"></p>
-            </div>
-            <div class="form-grid">
-                <label class="field">
-                    <span>Date</span>
-                    <input name="date" type="date" required>
-                </label>
-
-                <label class="field">
-                    <span>Workout name</span>
-                    <input
-                            name="workout"
-                            type="text"
-                            maxlength="100"
-                            placeholder="Chest + Triceps"
-                            required>
-                </label>
-
-                <label class="field full-width">
-                    <span>Workout notes</span>
-                    <textarea
-                            name="notes"
-                            rows="2"
-                            maxlength="500"></textarea>
-                </label>
-
-                <label class="rest-option full-width">
-                    <input id="rest-workout" type="checkbox">
-                    <span>This was a rest day</span>
-                </label>
-            </div>
-
-            <p id="previous-workout-status" class="comparison-status" role="status"></p>
-            <button id="repeat-last-workout" class="secondary-button" type="button" disabled>Repeat last workout</button>
-            <p class="section-caption">Enter a workout name and date, then copy its latest earlier session's exercises, exercise notes, weights and reps. Review the draft before saving.</p>
-            <div id="exercise-editor-section">
-                <div class="editor-section-heading">
-                    <h3>Exercises</h3>
-                    <button
-                            id="add-exercise"
-                            class="secondary-button compact-button"
-                            type="button">
-                        Add Exercise
-                    </button>
-                </div>
-
-                <div id="exercise-editors"></div>
-                <p class="section-caption">For bodyweight sets, leave weight blank. Add as many sets as you need, up to 20 per exercise.</p>
-                <button id="save-workout-template" class="secondary-button template-save" type="button">Save as template</button>
-                <p class="section-caption">Saves exercise names, notes and set counts. Weights and reps stay in your workout log.</p>
-            </div>
-
-            <p
-                    id="workout-form-status"
-                    class="status"
-                    aria-live="polite">
-            </p>
-
-            <div class="dialog-actions">
-                <button
-                        id="cancel-workout-form"
-                        class="secondary-button"
-                        type="button">
-                    Cancel
-                </button>
-
-                <button id="save-workout" type="submit">
-                    Save Workout
-                </button>
-            </div>
-        </form>
-    </dialog>
-
-    <template id="exercise-editor-template">
-        <fieldset class="exercise-editor">
-            <div class="exercise-editor-heading">
-                <strong class="exercise-editor-number">Exercise</strong>
-                <button
-                        class="remove-exercise icon-button"
-                        type="button"
-                        aria-label="Remove exercise">
-                    ×
-                </button>
-            </div>
-
-            <label class="field">
-                <span>Exercise name</span>
-                <input
-                        class="exercise-name"
-                        type="text"
-                        maxlength="100"
-                        placeholder="Bench Press"
-                        required>
-            </label>
-
-            <div class="sets-heading">
-                <span>Sets</span>
-                <button
-                        class="add-set secondary-button compact-button"
-                        type="button">
-                    Add Set
-                </button>
-            </div>
-
-            <div class="set-editors"></div>
-            <p class="previous-exercise section-caption"></p>
-
-            <label class="field">
-                <span>Exercise notes</span>
-                <textarea
-                        class="exercise-notes"
-                        rows="2"
-                        maxlength="500"></textarea>
-            </label>
-        </fieldset>
-    </template>
-
-    <template id="set-editor-template">
-        <div class="set-editor">
-            <strong class="set-editor-number">Set</strong>
-
-            <label class="field">
-                <span>Weight (kg)</span>
-                <input
-                        class="set-weight"
-                        type="number"
-                        min="0"
-                        step="0.1"
-                        placeholder="Empty = BW">
-            </label>
-
-            <label class="field">
-                <span>Reps</span>
-                <input
-                        class="set-reps"
-                        type="number"
-                        min="1"
-                        required>
-            </label>
-
-            <button
-                    class="remove-set icon-button"
-                    type="button"
-                    aria-label="Remove set">
-                ×
-            </button>
-            <span class="previous-set"></span>
-        </div>
-    </template>
 </main>
+
+<footer class="landing-footer">
+    <span>My Gym Tracker</span>
+    <a href="login.html">Sign in</a>
+</footer>
 </body>
 </html>

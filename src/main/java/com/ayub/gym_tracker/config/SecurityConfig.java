@@ -163,6 +163,8 @@ public class SecurityConfig {
                 .addFilterAfter(new PasswordSessionFilter(users), AnonymousAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
+                                "/",
+                                "/index.html",
                                 "/login.html",
                                 "/demo.html",
                                 "/demo.js",
@@ -172,6 +174,8 @@ public class SecurityConfig {
                                 "/verify-email.html",
                                 "/verify-email.js",
                                 "/styles.css",
+                                "/robots.txt",
+                                "/sitemap.xml",
                                 "/favicon.ico",
                                 "/error"
                         )

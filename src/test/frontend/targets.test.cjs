@@ -5,7 +5,7 @@ const vm = require("node:vm");
 const path = require("node:path");
 function harness() {
     const nodes = new Map();
-    const html = fs.readFileSync(path.join(__dirname, "../../main/resources/static/index.html"), "utf8");
+    const html = fs.readFileSync(path.join(__dirname, "../../main/resources/static/dashboard.html"), "utf8");
     const get = id => {
         assert.ok(html.includes('id="' + id.slice(1) + '"'));
         if (!nodes.has(id)) nodes.set(id, {listeners: {}, addEventListener(k, f) {this.listeners[k] = f;}});
