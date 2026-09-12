@@ -65,6 +65,24 @@ function workoutToolsHarness() {
     return h;
 }
 
+test('saved workout names remain editable while the original identity is retained', () => {
+    const h = harness();
+    const form = h.get('#workout-form');
+    form.reset = () => {};
+    form.elements = {workout: element(), date: element(), notes: element()};
+    h.run('resetWorkoutTools = () => {}; updateTemplateControls = () => {}; schedulePreviousWorkout = () => {}; loadWorkoutTemplates = () => {};');
+    h.get('#workout-dialog').showModal = () => {};
+    h.run('openWorkoutForm({name:"Back + Biceps", exercises:[]})');
+    assert.equal(form.elements.workout.readOnly, false);
+    form.elements.workout.value = 'Pull';
+    assert.equal(h.run('editingWorkoutName'), 'Back + Biceps');
+    h.run('restWorkoutCheckbox.checked = true; updateRestWorkoutState()');
+    assert.equal(form.elements.workout.value, 'Rest');
+    assert.equal(form.elements.workout.readOnly, true);
+    h.run('restWorkoutCheckbox.checked = false; updateRestWorkoutState()');
+    assert.equal(form.elements.workout.readOnly, false);
+});
+
 test('templates fill set counts without copying weights or reps', () => {
     const h = workoutToolsHarness();
     const draft = h.run('templateDraft({exercises:[{name:"Bench",setCount:6,notes:"Pause"}]})');

@@ -756,7 +756,7 @@ function openWorkoutForm(workout = null) {
         workout ? "Edit Workout" : "Log Workout";
 
     workoutForm.elements.date.value = dateInput.value;
-    workoutForm.elements.workout.readOnly = workout != null;
+    workoutForm.elements.workout.readOnly = false;
 
     if (workout) {
         workoutForm.elements.workout.value = workout.name;
@@ -891,7 +891,7 @@ function updateRestWorkoutState() {
             workoutName.value = editingWorkoutName && editingWorkoutName !== "Rest" ? editingWorkoutName : "";
         }
 
-        workoutName.readOnly = editingWorkoutName != null && editingWorkoutName !== "Rest";
+        workoutName.readOnly = false;
     }
     updateTemplateControls();
     schedulePreviousWorkout();
