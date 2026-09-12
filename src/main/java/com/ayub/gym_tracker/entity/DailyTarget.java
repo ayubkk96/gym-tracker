@@ -59,6 +59,13 @@ public class DailyTarget {
         this.effectiveFrom = effectiveFrom;
     }
 
+    public void updateValues(Integer calories, BigDecimal proteinG, BigDecimal carbsG, BigDecimal fatG) {
+        this.calories = calories;
+        this.proteinG = proteinG;
+        this.carbsG = carbsG;
+        this.fatG = fatG;
+    }
+
     public Long getId() {
         return id;
     }
