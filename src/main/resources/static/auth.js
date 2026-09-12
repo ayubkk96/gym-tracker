@@ -37,7 +37,7 @@ async function initialiseAuthentication() {
         const session = await loadSession();
 
         if (session.authenticated) {
-            window.location.replace("/");
+            window.location.replace("/dashboard.html");
             return;
         }
 
@@ -94,7 +94,7 @@ async function signIn(event) {
             throw new Error("Invalid email or password.");
         }
 
-        window.location.replace("/");
+        window.location.replace("/dashboard.html");
     } catch (error) {
         console.error(error);
         showStatus(
@@ -178,7 +178,7 @@ async function register(event) {
             );
         }
 
-        window.location.replace("/");
+        window.location.replace("/dashboard.html");
     } catch (error) {
         console.error(error);
         showStatus(
